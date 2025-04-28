@@ -1,0 +1,25 @@
+{
+  "name": "ProjectA",
+  "version": "0.0.1",
+  "description": "A modified Discord Electron Wrapper to make Discord a little less of a headache!",
+  "main": "dist/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc-watch --onSuccess 'tsc-alias'",
+    "start": "electron .",
+    "build": "tsc && tsc-alias && electron ."
+  },
+  "keywords": [],
+  "author": "Neo Sahadeo",
+  "license": "ISC",
+  "packageManager": "pnpm@10.9.0",
+  "dependencies": {
+    "electron": "^35.2.1"
+  },
+  "devDependencies": {
+    "toml": "^3.0.0",
+    "tsc-alias": "^1.8.15",
+    "tsc-watch": "^6.2.1",
+    "typescript": "^5.8.3"
+  }
+}
