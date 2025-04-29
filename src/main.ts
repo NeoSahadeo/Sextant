@@ -7,35 +7,52 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import toml from "toml";
 
 import bootstrap from "./bootstrap";
+import patch from "./patch";
+
+// Patches
+import { auto_login_handler } from "./patches/auto_login";
+import { stream_handler } from "./patches/stream";
+//
 
 const pwd = dirname(fileURLToPath(import.meta.url));
-let settings;
+const patches = [stream_handler];
+let settings: any;
 
-function createWindow() {
+function create_window() {
 	const app = new BrowserWindow({
-		width: 800,
-		height: 600,
-		show: false,
+		width: settings.width,
+		height: settings.height,
+		show: settings.show_boot,
 		webPreferences: {
 			preload: path.join(pwd, "preload.js"),
 		},
 	});
 
-	ipcMain.on("access_files", (events: any) => { });
+	console.log(app.webContents.getUserAgent());
 
 	// Load Window Contents
 	app.loadURL("https://www.discord.com/channels/");
-	app.webContents.executeJavaScript(
-		`const __boostrap = ${bootstrap};__boostrap();`,
-	);
 
-	app.webContents.openDevTools();
-	app.once("ready-to-show", () => {
+	// Load Settings
+	if (settings.show_dev_tools_on_boot) {
+		app.webContents.openDevTools();
+	}
+	if (!settings.show_menu_bar) {
+		app.setMenu(null);
+	}
+
+	ipcMain.on("load_patches", (events: any) => {
+		// Hide window till the app actually loads. Might change.
 		app.show();
+		// Inject Java's Script
+		app.webContents.executeJavaScript(patch() as any);
 	});
+
+	app.webContents.executeJavaScript(`(${bootstrap})();`);
 }
 
 app.whenReady().then(() => {
+	// Read in Config file
 	fs.readFile(
 		path.join(
 			path.resolve(import.meta.dirname, ".."),
@@ -45,13 +62,13 @@ app.whenReady().then(() => {
 		"utf-8",
 		(err, data) => {
 			if (err) {
-				console.info("Something Happend Trying to Read Config");
+				console.info("Something Happend When Trying to Read Settings");
 				console.error(err);
 				return;
 			}
 			settings = toml.parse(data);
-			console.log(settings.width);
-			// createWindow();
+			patches.forEach((e: any) => e(settings));
+			create_window();
 		},
 	);
 });

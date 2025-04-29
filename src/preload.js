@@ -1,5 +1,6 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld('electron', {
-	readDirectory: () => ipcRenderer.send('access_files')
+contextBridge.exposeInMainWorld("electron", {
+	auto_login: () => ipcRenderer.invoke("auto_login"),
+	load_patches: () => ipcRenderer.send("load_patches"),
 });

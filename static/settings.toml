@@ -1,2 +1,6 @@
 width = 600
 heigth = 800
+
+show_boot = true
+show_menu_bar = true
+show_dev_tools_on_boot = true
