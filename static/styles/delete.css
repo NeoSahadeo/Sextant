@@ -1,0 +1,10 @@
+/* REMOVE GOOFY STUFF I DONT LIKE */
+
+* {
+	animation: all 0s !important;
+}
+
+[class*="pill__"],
+[class*="pill_"] {
+	display: none;
+}

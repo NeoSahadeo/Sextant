@@ -3,12 +3,12 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import fs from "node:fs";
 
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, globalShortcut, ipcMain } from "electron";
 import toml from "toml";
 
 import bootstrap from "./bootstrap";
 import patch from "./patch";
-import { load_file_content } from "./utils";
+import { logger, load_file_content, root_path } from "./utils";
 
 /**Patches**/
 import { auto_login_handler } from "./patches/auto_login";
@@ -20,7 +20,7 @@ const patches = [stream_handler];
 let settings: any; // This will be loaded from the setting.toml file in static
 
 function create_window() {
-	const app = new BrowserWindow({
+	const browser_window = new BrowserWindow({
 		width: settings.width,
 		height: settings.height,
 		show: settings.show_boot,
@@ -32,30 +32,34 @@ function create_window() {
 	});
 
 	// Pach User Agent
-	let user_agent = app.webContents.getUserAgent() as string;
+	let user_agent = browser_window.webContents.getUserAgent() as string;
 	user_agent = user_agent.replaceAll(/Sextant\S+|Electron\S+/g, "");
 
 	// Load Window Contents
-	app.loadURL("https://www.discord.com/channels/", {
+	browser_window.loadURL("https://www.discord.com/channels/", {
 		userAgent: user_agent,
 	});
 
 	// Load Settings
 	if (settings.show_dev_tools_on_boot) {
-		app.webContents.openDevTools();
+		browser_window.webContents.openDevTools();
 	}
 	if (!settings.show_menu_bar) {
-		app.setMenu(null);
+		browser_window.setMenu(null);
 	}
 
 	ipcMain.on("load_patches", (events: any) => {
-		// Hide window till the app actually loads. Might change.
-		app.show();
+		// Hide window till the browser_window actually loads. Might change.
+		browser_window.show();
 		// Inject Java's Script
-		app.webContents.executeJavaScript(patch() as any);
+		browser_window.webContents.executeJavaScript(patch() as any);
 	});
 
-	app.webContents.executeJavaScript(`(${bootstrap})();`);
+	browser_window.webContents.executeJavaScript(`(${bootstrap})();`);
+
+	// Remove these keys because!
+	globalShortcut.register("Control+R", () => 0);
+	globalShortcut.register("Control+Shift+R", () => 0);
 }
 
 app.whenReady().then(async () => {
@@ -65,4 +69,30 @@ app.whenReady().then(async () => {
 		patches.forEach((e: any) => e(settings));
 		create_window();
 	}
+});
+
+// Dynamic CSS Loader
+ipcMain.handle("load_css", async () => {
+	return new Promise((resolve, reject) => {
+		fs.readdir(path.join(root_path(), "static", "styles"), (err, _files) => {
+			if (err) {
+				logger(err, "error");
+				resolve("Error loading in styles");
+			} else {
+				let data = "";
+				_files.forEach(async (e, index) => {
+					if (e.includes(".css")) {
+						const content = await load_file_content(
+							path.join("static", "styles", e),
+						);
+						data += `
+						<style id="sextant_css_${index}">
+						${content}
+						</style>`;
+					}
+					if (index === _files.length - 1) resolve([data, _files.length]);
+				});
+			}
+		});
+	});
 });

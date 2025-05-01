@@ -1,6 +1,8 @@
 import path from "node:path";
 import fs from "node:fs";
 
+const root_path = () => path.resolve(import.meta.dirname, "..");
+
 const logger = (
 	message: any,
 	level: "warning" | "error" | "debug" | "info" | "log" = "log",
@@ -29,22 +31,18 @@ const logger = (
 
 function load_file_content(file_path: string): Promise<null | string> {
 	return new Promise((resolve, reject) => {
-		fs.readFile(
-			path.join(path.resolve(import.meta.dirname, ".."), file_path),
-			"utf-8",
-			(err, data) => {
-				if (err) {
-					logger(
-						`Something happend when trying to read the file: ${file_path}`,
-						"error",
-					);
-					reject(null);
-				} else {
-					resolve(data);
-				}
-			},
-		);
+		fs.readFile(path.join(root_path(), file_path), "utf-8", (err, data) => {
+			if (err) {
+				logger(
+					`Something happend when trying to read the file: ${file_path}`,
+					"error",
+				);
+				reject(null);
+			} else {
+				resolve(data);
+			}
+		});
 	});
 }
 
-export { load_file_content, logger };
+export { load_file_content, logger, root_path };
