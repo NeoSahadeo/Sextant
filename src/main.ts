@@ -28,10 +28,13 @@ function create_window() {
 		},
 	});
 
-	console.log(app.webContents.getUserAgent());
+	let user_agent = app.webContents.getUserAgent();
+	user_agent = user_agent.replaceAll(/Sextant\S+|Electron\S+/g, "");
 
 	// Load Window Contents
-	app.loadURL("https://www.discord.com/channels/");
+	app.loadURL("https://www.discord.com/channels/", {
+		userAgent: user_agent,
+	});
 
 	// Load Settings
 	if (settings.show_dev_tools_on_boot) {
