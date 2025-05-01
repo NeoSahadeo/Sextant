@@ -8,27 +8,31 @@ import toml from "toml";
 
 import bootstrap from "./bootstrap";
 import patch from "./patch";
+import { load_file_content } from "./utils";
 
-// Patches
+/**Patches**/
 import { auto_login_handler } from "./patches/auto_login";
 import { stream_handler } from "./patches/stream";
-//
+/***********/
 
 const pwd = dirname(fileURLToPath(import.meta.url));
 const patches = [stream_handler];
-let settings: any;
+let settings: any; // This will be loaded from the setting.toml file in static
 
 function create_window() {
 	const app = new BrowserWindow({
 		width: settings.width,
 		height: settings.height,
 		show: settings.show_boot,
+		autoHideMenuBar: settings.hide_menu_bar,
 		webPreferences: {
 			preload: path.join(pwd, "preload.js"),
+			devTools: settings.allow_dev_tools,
 		},
 	});
 
-	let user_agent = app.webContents.getUserAgent();
+	// Pach User Agent
+	let user_agent = app.webContents.getUserAgent() as string;
 	user_agent = user_agent.replaceAll(/Sextant\S+|Electron\S+/g, "");
 
 	// Load Window Contents
@@ -54,24 +58,11 @@ function create_window() {
 	app.webContents.executeJavaScript(`(${bootstrap})();`);
 }
 
-app.whenReady().then(() => {
-	// Read in Config file
-	fs.readFile(
-		path.join(
-			path.resolve(import.meta.dirname, ".."),
-			"static",
-			"settings.toml",
-		),
-		"utf-8",
-		(err, data) => {
-			if (err) {
-				console.info("Something Happend When Trying to Read Settings");
-				console.error(err);
-				return;
-			}
-			settings = toml.parse(data);
-			patches.forEach((e: any) => e(settings));
-			create_window();
-		},
-	);
+app.whenReady().then(async () => {
+	const data = await load_file_content(path.join("static", "settings.toml"));
+	if (data) {
+		settings = toml.parse(data);
+		patches.forEach((e: any) => e(settings));
+		create_window();
+	}
 });

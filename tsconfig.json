@@ -2,17 +2,21 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "target": "ESNext",            // or "ES6", depending on your needs
-    "module": "ESNext",            // or "CommonJS" based on your setup
+    "target": "ESNext",
+    "module": "ESNext",
     "moduleResolution": "node",
     "allowJs": true,
     "strict": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "lib": [
+      "ESNext",
+      "dom"
+    ]
   },
   "tsc-alias": {
     "resolveFullPaths": true,
     "verbose": false
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "global.d.ts"],
   "exclude": ["out"]
 }

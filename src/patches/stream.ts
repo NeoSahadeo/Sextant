@@ -1,3 +1,3 @@
 export const stream_handler = () => { };
 
-export default async () => { };
+export default () => { };

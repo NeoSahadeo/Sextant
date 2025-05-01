@@ -1,0 +1,50 @@
+import path from "node:path";
+import fs from "node:fs";
+
+const logger = (
+	message: any,
+	level: "warning" | "error" | "debug" | "info" | "log" = "log",
+	namespace: string = "Sextant",
+) => {
+	switch (level) {
+		case "warning":
+			console.warn(`[${namespace}] ${message}\x1b[0m`);
+			break;
+		case "error":
+			console.error(
+				`\x1b[30;41;22m[${namespace}]\x1b[31;49m ${message}\x1b[0m`,
+			);
+			break;
+		case "debug":
+			console.debug(`[${namespace}] ${message}\x1b[0m`);
+			break;
+		case "info":
+			console.info(`[${namespace}] ${message}\x1b[0m`);
+			break;
+		case "log":
+			console.log(`[${namespace}] ${message}`);
+			break;
+	}
+};
+
+function load_file_content(file_path: string): Promise<null | string> {
+	return new Promise((resolve, reject) => {
+		fs.readFile(
+			path.join(path.resolve(import.meta.dirname, ".."), file_path),
+			"utf-8",
+			(err, data) => {
+				if (err) {
+					logger(
+						`Something happend when trying to read the file: ${file_path}`,
+						"error",
+					);
+					reject(null);
+				} else {
+					resolve(data);
+				}
+			},
+		);
+	});
+}
+
+export { load_file_content, logger };
