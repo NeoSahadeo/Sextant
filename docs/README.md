@@ -4,7 +4,7 @@ This will be a non-exhaustive list of the different API's and functions
 in the project as well as the use of each.
 
 
-###### Creating Modules
+### Creating Modules
 
 If you haven't yet and are planning on writing modules for Sextant, I
 recommend reading how [patches are applied](#patch).
@@ -36,4 +36,4 @@ If the script is meant to run **only on the browser**, add your patches
 to the push method where there is this comment `// load in the dom scripts`.
 It must follow the the format `${function_export}`.
 
-Read on how to export functions -> [creating modules](#creating_modules)
+Read on how to export functions -> [creating modules](#creating-modules)
