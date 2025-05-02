@@ -52,7 +52,8 @@ Anything within the brackets will be executed.
 
 **Example**
 
-```typescript patches/example.ts
+**patches/example.ts**
+```typescript
 import { ipcMain } from "electron";
 
 export const example_handler = (settings: toml) => {
@@ -67,7 +68,8 @@ export default () => {
 };
 ```
 
-```javascript preload.js
+**preload.js**
+```javascript
 const { contextBridge, ipcRenderer } = require("electron");
     contextBridge.exposeInMainWorld("electron", {
     ...
@@ -75,12 +77,14 @@ const { contextBridge, ipcRenderer } = require("electron");
 });
 ```
 
-```typescript main.ts
+**main.ts**
+```typescript
 import { example_handler } from "./patches/example";
 const patches = [example_handler];
 ```
 
-```typescript patch.ts
+**patch.ts**
+```typescript
 import example from "./patches/example";
 ...
 	patches.push(`${recent_fix}`, `${dynamic_css_loader}`, `${example}`);
