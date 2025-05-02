@@ -34,7 +34,7 @@ export default () => { };
 The `handler_function` will be used for anything that is like
 ipcMain function.
 
-> [!INFO]
+> [!NOTE]
 > Your handler function will optionally take in settings from
 > the [settings.toml file](#settings)
 
