@@ -11,6 +11,7 @@ const patch = () => {
 	// load non dom specific scripts before doms scripts
 	patches.push(`window.logger = ${logger}`);
 
+	// PUT YOUR PATCHES HERE
 	// load in the dom scripts
 	patches.push(`${recent_fix}`, `${dynamic_css_loader}`);
 

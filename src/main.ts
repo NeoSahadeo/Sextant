@@ -49,10 +49,11 @@ function create_window() {
 	}
 
 	ipcMain.on("load_patches", (events: any) => {
-		// Hide window till the browser_window actually loads. Might change.
-		browser_window.show();
 		// Inject Java's Script
 		browser_window.webContents.executeJavaScript(patch() as any);
+
+		// Hide window till the browser_window actually loads. Might change.
+		browser_window.show();
 	});
 
 	browser_window.webContents.executeJavaScript(`(${bootstrap})();`);
