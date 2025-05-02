@@ -1,4 +1,9 @@
 export default () => {
+	// const clone = document.body.parentNode?.cloneNode(true);
+	// if (document.body.parentNode && clone) {
+	// 	document.getElementsByTagName("html")[0].remove();
+	// 	// document.appendChild(clone);
+	// }
 	// const stop_reload = () => {
 	// 	document.addEventListener("keydown", (event) => {
 	// 		window.logger("Ctrl+R is disabled.");

@@ -1,1 +1,5 @@
-* {}
+* {
+	--custom-guild-list-width: 3.4em !important;
+}
+
+#sextant_css_button {}

@@ -1,7 +1,8 @@
 /* REMOVE GOOFY STUFF I DONT LIKE */
 
 * {
-	animation: all 0s !important;
+	animation: none !important;
+	transition: none !important;
 }
 
 [class*="pill__"],
