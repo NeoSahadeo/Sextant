@@ -13,10 +13,11 @@ import { logger, load_file_content, root_path } from "./utils";
 /**Patches**/
 import { auto_login_handler } from "./patches/auto_login";
 import { stream_handler } from "./patches/stream";
+import { dynamic_css_loader_handler } from "./patches/dynamic_css_loader";
 /***********/
 
 const pwd = dirname(fileURLToPath(import.meta.url));
-const patches = [stream_handler];
+const patches = [dynamic_css_loader_handler];
 let settings: any; // This will be loaded from the setting.toml file in static
 
 function create_window() {
@@ -70,30 +71,4 @@ app.whenReady().then(async () => {
 		patches.forEach((e: any) => e(settings));
 		create_window();
 	}
-});
-
-// Dynamic CSS Loader
-ipcMain.handle("load_css", async () => {
-	return new Promise((resolve, reject) => {
-		fs.readdir(path.join(root_path(), "static", "styles"), (err, _files) => {
-			if (err) {
-				logger(err, "error");
-				resolve("Error loading in styles");
-			} else {
-				let data = "";
-				_files.forEach(async (e, index) => {
-					if (e.includes(".css")) {
-						const content = await load_file_content(
-							path.join("static", "styles", e),
-						);
-						data += `
-						<style id="sextant_css_${index}">
-						${content}
-						</style>`;
-					}
-					if (index === _files.length - 1) resolve([data, _files.length]);
-				});
-			}
-		});
-	});
 });

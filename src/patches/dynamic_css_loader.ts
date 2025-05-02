@@ -1,3 +1,36 @@
+import path from "node:path";
+import fs from "node:fs";
+import { ipcMain } from "electron";
+import { logger, load_file_content, root_path } from "../utils";
+
+export const dynamic_css_loader_handler = () => {
+	// Dynamic CSS Loader
+	ipcMain.handle("load_css", async () => {
+		return new Promise((resolve, reject) => {
+			fs.readdir(path.join(root_path(), "static", "styles"), (err, _files) => {
+				if (err) {
+					logger(err, "error");
+					resolve("Error loading in styles");
+				} else {
+					let data = "";
+					_files.forEach(async (e, index) => {
+						if (e.includes(".css")) {
+							const content = await load_file_content(
+								path.join("static", "styles", e),
+							);
+							data += `
+						<style id="sextant_css_${index}">
+						${content}
+						</style>`;
+						}
+						if (index === _files.length - 1) resolve([data, _files.length]);
+					});
+				}
+			});
+		});
+	});
+};
+
 export default () => {
 	const inject_css = async () => {
 		window.logger("Reloading CSS");

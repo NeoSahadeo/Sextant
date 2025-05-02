@@ -7,7 +7,28 @@ in the project as well as the use of each.
 ### Creating Modules
 
 If you haven't yet and are planning on writing modules for Sextant, I
-recommend reading how [patches are applied](#patch).
+recommend reading how [patches are applied](#patch) first.
+
+To create a patch you program should follow the format:
+
+```typescript
+export const handler_function = () => { };
+
+// This is the main function
+export default () => { };
+```
+
+The `handler_function` will be used for anything that is like
+ipcMain function.
+
+> [!IMPORTANT]
+> In order for the `ipcMain` function to work, you will need to
+> add it the the `patches` variable in `main.ts`
+
+`export default ()=>{}` is where your code will go. This will
+be injected into the DOM during the runtime of the program.
+Anything within the brackets will be executed.
+
 
 ## API
 
