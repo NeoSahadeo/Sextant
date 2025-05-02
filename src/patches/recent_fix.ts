@@ -15,7 +15,7 @@ export default () => {
 			observer.disconnect();
 			support.remove();
 			bar.remove();
-			window.sextant.loaded++;
+			window.electron.loaded_patch("recent_fix", 0);
 		}
 	};
 

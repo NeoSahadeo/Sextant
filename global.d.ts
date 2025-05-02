@@ -5,9 +5,8 @@ declare global {
 			level: "warning" | "error" | "debug" | "info" | "log" = "log",
 			namespace: string = "Sextant",
 		) => void;
-		sextant: {
-			modules: number;
-			loaded: number;
+		electron: {
+			loaded_patch: (name, status) => void;
 		};
 	}
 }

@@ -73,9 +73,9 @@ export default () => {
 			"nav[class*='guilds_'] [class*='itemsContainer_'] [class*='stack_']",
 		)[0];
 
+		window.logger(nav, "info");
 		if (nav) {
 			nav.innerHTML = "";
-			observer.disconnect();
 
 			// Replace the guild node with a div
 			// Trying to modify it at runtime crashes discord; idk why
@@ -96,24 +96,28 @@ export default () => {
 			css_button.id = "sextant_css_button";
 			div.appendChild(css_button);
 
-			window.sextant.loaded++;
+			window.electron.loaded_patch("dynamic_css_loader", 0);
 		}
 	};
 
-	const observer = new MutationObserver(() => {
-		inject_button();
-		inject_css();
-		if (--max_retry == 0) {
-			window.logger(
-				"Max Retries Reached, something is probably wrong",
-				"error",
-			);
-			observer.disconnect();
-		}
-	});
+	inject_button();
+	inject_css();
 
-	observer.observe(document.body!.parentNode!, {
-		subtree: true,
-		childList: true,
-	});
+	// const observer = new MutationObserver(() => {
+	// 	inject_button();
+	// 	inject_css();
+	//
+	// 	observer.disconnect();
+	// 	// if (--max_retry == 0) {
+	// 	// 	window.logger(
+	// 	// 		"Max Retries Reached, something is probably wrong",
+	// 	// 		"error",
+	// 	// 	);
+	// 	// }
+	// });
+	//
+	// observer.observe(document.body!.parentNode!, {
+	// 	subtree: true,
+	// 	childList: true,
+	// });
 };

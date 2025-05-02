@@ -5,25 +5,22 @@ import dynamic_css_loader from "./patches/dynamic_css_loader";
 import reload from "./patches/reload";
 import recent_fix from "./patches/recent_fix";
 
+// Amount of patches registered.
+export let patch_count = 0;
+let dom_patches = 0;
+
 const patch = () => {
 	let patches = [];
 
 	// load non dom specific scripts before doms scripts
 	patches.push(`window.logger = ${logger}`);
 
+	dom_patches = patches.length;
 	// PUT YOUR PATCHES HERE
 	// load in the dom scripts
-	patches.push(`${recent_fix}`, `${dynamic_css_loader}`);
+	patches.push(`${stream}`, `${recent_fix}`, `${dynamic_css_loader}`);
 
-	// Add a way to track if modules load
-	// Very caveman
-	patches.unshift(
-		`()=>{
-			window.sextant = {};
-			window.sextant.modules = ${patches.length - 1};
-			window.sextant.loaded = 0;
-		}`,
-	);
+	patch_count = patches.length - dom_patches;
 
 	return patches.map((e) => `(${e})()`);
 };

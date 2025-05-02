@@ -1,5 +1,26 @@
 * {
 	--custom-guild-list-width: 3.4em !important;
+	--bg-base-primary: orange !important;
+	--bg-base-secondary: transparent !important;
+	--bg-base-tertiary: transparent !important;
+	--background-base-lowest: transparent !important;
+	/* background-color: transparent !important; */
+}
+
+body {
+	background-color: rgba(0, 0, 0, 0.9) !important;
+	/* background-color: red !important; */
 }
 
 #sextant_css_button {}
+
+.remove {
+	display: none !important;
+}
+
+#sextant_html_stream {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	margin: 1em;
+}
