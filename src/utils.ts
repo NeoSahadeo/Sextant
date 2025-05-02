@@ -10,7 +10,7 @@ const logger = (
 ) => {
 	switch (level) {
 		case "warning":
-			console.warn(`[${namespace}] ${message}\x1b[0m`);
+			console.warn(`\x1b[30;43;22m[${namespace}]\x1b[33;49m ${message}\x1b[0m`);
 			break;
 		case "error":
 			console.error(
@@ -18,10 +18,12 @@ const logger = (
 			);
 			break;
 		case "debug":
-			console.debug(`[${namespace}] ${message}\x1b[0m`);
+			console.debug(
+				`\x1b[30;45;22m[${namespace}]\x1b[35;49m ${message}\x1b[0m`,
+			);
 			break;
 		case "info":
-			console.info(`[${namespace}] ${message}\x1b[0m`);
+			console.info(`\x1b[30;22;46m[${namespace}]\x1b[36;49m ${message}\x1b[0m`);
 			break;
 		case "log":
 			console.log(`[${namespace}] ${message}`);

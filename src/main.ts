@@ -45,7 +45,7 @@ function create_window() {
 	if (settings.show_dev_tools_on_boot) {
 		browser_window.webContents.openDevTools();
 	}
-	if (!settings.show_menu_bar) {
+	if (!settings.allow_menu_bar) {
 		browser_window.setMenu(null);
 	}
 
@@ -68,7 +68,7 @@ app.whenReady().then(async () => {
 	const data = await load_file_content(path.join("static", "settings.toml"));
 	if (data) {
 		settings = toml.parse(data);
-		patches.forEach((e: any) => e(settings));
+		patches.forEach((e: Function) => e(settings));
 		create_window();
 	}
 });

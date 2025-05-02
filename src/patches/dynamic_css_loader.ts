@@ -3,7 +3,7 @@ import fs from "node:fs";
 import { ipcMain } from "electron";
 import { logger, load_file_content, root_path } from "../utils";
 
-export const dynamic_css_loader_handler = () => {
+export const dynamic_css_loader_handler = (s: any) => {
 	// Dynamic CSS Loader
 	ipcMain.handle("load_css", async () => {
 		return new Promise((resolve, reject) => {
@@ -32,8 +32,9 @@ export const dynamic_css_loader_handler = () => {
 };
 
 export default () => {
+	let max_retry = 10; // Prevents for runaway
 	const inject_css = async () => {
-		window.logger("Reloading CSS");
+		window.logger("Reloading CSS", "info");
 		const data = await (window as any).electron.load_css();
 
 		for (let x = 0; x < data[1]; x++) {
@@ -102,6 +103,13 @@ export default () => {
 	const observer = new MutationObserver(() => {
 		inject_button();
 		inject_css();
+		if (--max_retry == 0) {
+			window.logger(
+				"Max Retries Reached, something is probably wrong",
+				"error",
+			);
+			observer.disconnect();
+		}
 	});
 
 	observer.observe(document.body!.parentNode!, {

@@ -1,9 +1,7 @@
 width = 600
 heigth = 800
-
 show_boot = true
-show_menu_bar = false
 show_dev_tools_on_boot = true
-
+hide_menu_bar = false
+allow_menu_bar = true
 allow_dev_tools = true
-hide_menu_bar = true
