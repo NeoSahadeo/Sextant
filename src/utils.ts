@@ -1,6 +1,56 @@
 import path from "node:path";
 import fs from "node:fs";
 
+class EventListener {
+	listeners: any;
+	constructor() {
+		this.listeners = {};
+	}
+	/**
+	 * Add an event listener to certain interactions of the function.
+	 * Uses the standard JS addEventListener naming scheme and functions
+	 * how you would expect it to.
+	 * @param event - Event name
+	 * @param callback - Callback function
+	 */
+	addEventListener(event: string, callback: (...args: any) => void) {
+		if (!this.listeners[event]) {
+			this.listeners[event] = [];
+		}
+		this.listeners[event].push(callback);
+	}
+
+	/**
+	 * Remove an event listener from the object.
+	 * Uses the standard JS removeEventListener naming scheme and functions
+	 * how you would expect it to.
+	 * @param event - Event name
+	 * @param callback - Callback function to remove
+	 */
+	removeEventListener(event: string, callback: () => void) {
+		if (this.listeners[event]) {
+			this.listeners[event] = this.listeners[event].filter(
+				(listener: () => void) => listener !== callback,
+			);
+		}
+	}
+
+	/**
+	 * Runs all events that the object contains.
+	 * Uses the standard JS dispatchEvent naming scheme and functions
+	 * how you would expect it to.
+	 * @param event - Event name
+	 * @param data - Data for the callback
+	 */
+	dispatchEvent(event: string, data: any) {
+		if (this.listeners[event]) {
+			this.listeners[event].forEach((callback: (data: any) => void) =>
+				callback(data),
+			);
+		}
+	}
+}
+
 const root_path = () => path.resolve(import.meta.dirname, "..");
 
 const logger = (
@@ -47,4 +97,4 @@ function load_file_content(file_path: string): Promise<null | string> {
 	});
 }
 
-export { load_file_content, logger, root_path };
+export { load_file_content, logger, root_path, EventListener };
