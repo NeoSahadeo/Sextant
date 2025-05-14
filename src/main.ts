@@ -43,15 +43,19 @@ const user_config_path = path.join(
 export const pwd = dirname(fileURLToPath(import.meta.url));
 let settings: any; // This will be loaded from the setting.toml file in static
 
+const patches = [
+	stream_patch,
+	on_before_request,
+	//
+];
 const plugins = [
 	dynamic_styles,
 	better_stream,
+	reduce_dom_size,
 	// stop_propagration
 ];
 const plugin_handlers = [dynamic_styles_handler];
 const manager = new PluginManager();
-
-const patches = [stream_patch, block_domain];
 
 function load_plugins() {
 	plugins.forEach((e) => manager.register(e));
@@ -132,6 +136,11 @@ app.whenReady().then(async () => {
 	const data = await loaded_settings();
 	if (data) {
 		settings = toml.parse(data);
+
+		// Setting data. Will change later
+		// set_blocked_domains(settings.blocked_domains);
+		set_request_limit(settings.request_limit);
+
 		plugin_handlers.forEach((e: Function) => e(settings));
 		create_window();
 	}

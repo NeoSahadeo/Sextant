@@ -5,3 +5,8 @@
 [class^="blockedIgnoredSettingsNotice__"] {
 	display: none;
 }
+
+/*Remove start of chat message*/
+[class^="scrollerInner__"] [class^="container__"] {
+	display: none;
+}

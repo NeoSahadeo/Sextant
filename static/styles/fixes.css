@@ -1,0 +1,11 @@
+/*Fixes Image Rounding*/
+img[class^="avatar__"] {
+	border-radius: 1em;
+	width: 2em;
+}
+
+/* This is for the activitiy status*/
+div[class^="avatar__"] rect {
+	rx: 1em;
+	ry: 1em;
+}
