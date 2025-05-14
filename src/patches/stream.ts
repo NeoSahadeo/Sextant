@@ -1,3 +1,6 @@
+/* NeoSahadeo @ Sextant */
+/* Patch for ability to stream */
+
 import { session, desktopCapturer } from "electron";
 
 export default function stream_patch() {
