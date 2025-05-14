@@ -6,23 +6,15 @@
   <br>
 </h1>
 
-<h4 align="center">A Discord mod focused on better streaming quality, faster-feeling UI, and general optimisations.</h4>
+<h4 align="center">
+A Discord Mod focused on better streaming, performance, and privacy.
+</h4>
 
 <p align="center">
   <a href="#key-features">Key Features</a> •
   <a href="#download">Download</a> •
   <a href="#license">License</a>
 </p>
-
-## Key Features
-
-## Download
-
-## Support
-
-## License
-
-
 
 ---
 

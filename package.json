@@ -1,13 +1,16 @@
 {
   "name": "Sextant",
-  "version": "0.0.1",
-  "description": "A modified Discord Electron Wrapper to make Discord a little less of a headache!",
-  "main": "dist/main.js",
+  "version": "0.0.2",
+  "description": "A modified Discord Electron Wrapper to provide a better Discord experience",
+  "main": "build/main.js",
   "type": "module",
   "scripts": {
     "dev": "tsc-watch --onSuccess 'bash dev.sh'",
-    "start": "electron .",
-    "build": "tsc && tsc-alias"
+    "start": "APP_DEV=true electron .",
+    "compile": "rm -r build && tsc && tsc-alias",
+    "build": "APP_DEV=false pnpm compile && electron-builder",
+    "build:dev": "APP_DEV=true && pnpm compile && cp -r static build && electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
   "build": {
     "appId": "com.sextant.app",
@@ -15,6 +18,18 @@
     "directories": {
       "output": "releases"
     },
+    "extraResources": [
+      {
+        "from": "static",
+        "to": "static"
+      }
+    ],
+    "files": [
+      "build",
+      "static",
+      "!**/*.map",
+      "!docs"
+    ],
     "linux": {
       "target": [
         "AppImage"
@@ -28,12 +43,12 @@
   "devDependencies": {
     "electron": "^35.2.1",
     "electron-builder": "^26.0.12",
-    "toml": "^3.0.0",
     "tsc-alias": "^1.8.15",
     "tsc-watch": "^6.2.1",
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "toml": "^3.0.0",
     "axios": "^1.9.0"
   }
 }

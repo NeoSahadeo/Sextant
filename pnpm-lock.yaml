@@ -11,6 +11,9 @@ importers:
       axios:
         specifier: ^1.9.0
         version: 1.9.0
+      toml:
+        specifier: ^3.0.0
+        version: 3.0.0
     devDependencies:
       electron:
         specifier: ^35.2.1
@@ -18,9 +21,6 @@ importers:
       electron-builder:
         specifier: ^26.0.12
         version: 26.0.12(electron-builder-squirrel-windows@26.0.12)
-      toml:
-        specifier: ^3.0.0
-        version: 3.0.0
       tsc-alias:
         specifier: ^1.8.15
         version: 1.8.15
