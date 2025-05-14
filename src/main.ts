@@ -22,12 +22,17 @@ import { dynamic_styles } from "./plugins/dynamicStyles";
 import { dynamic_styles_handler } from "./plugins/dynamicStyles";
 import { stop_propagration } from "./plugins/stopPropagation";
 import { better_stream } from "./plugins/betterStream";
+import { reduce_dom_size } from "./plugins/reduceDOMSize";
 /***********/
 
 /**Patches**/
 import stream_patch from "./patches/stream";
-import block_domain from "./patches/blockDomain";
+import on_before_request from "./patches/onBeforeRequest";
 /***********/
+
+// Setters. Will change later
+import { set_request_limit } from "./patches/requestLimit";
+import { set_blocked_domains } from "./patches/blockDomain";
 
 const user_config_path = path.join(
 	app.getPath("home"),
