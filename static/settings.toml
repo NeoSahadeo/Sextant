@@ -3,7 +3,7 @@ heigth = 800
 show_boot = false
 show_dev_tools_on_boot = false
 hide_menu_bar = true
-allow_menu_bar = true
+allow_menu_bar = false
 allow_dev_tools = true
 transparent = false
 

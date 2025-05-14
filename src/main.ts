@@ -109,12 +109,14 @@ function create_window() {
 		browser_window.webContents.executeJavaScript(manager.get_inject());
 	});
 
-	// Remove these keys because!
 	globalShortcut.register("Control+R", () => {
 		logger("Reloading", "debug");
 		browser_window.webContents.executeJavaScript(manager.get_inject());
 	});
-	globalShortcut.register("Control+Shift+R", () => 0);
+	globalShortcut.register("Control+Q", () => {
+		browser_window.close();
+	});
+	// globalShortcut.register("Control+Shift+R", () => 0);
 }
 
 async function loaded_settings() {
