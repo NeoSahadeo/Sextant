@@ -2,10 +2,8 @@ export const reduce_dom_size: SextantPlugin = {
 	name: "ReduceDOMSize",
 	load() {
 		return () => {
-			const element = document.querySelector('[id="app-mount"]>svg');
-			if (element) {
-				element.remove();
-			}
+			const elements = document.querySelectorAll('[id="app-mount"]>svg'); // This causes excessive dom size issues
+			elements.forEach((e) => e.remove());
 		};
 	},
 };
