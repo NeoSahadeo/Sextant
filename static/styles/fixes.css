@@ -1,11 +1,14 @@
+* {
+	--circle: 100%;
+}
+
 /*Fixes Image Rounding*/
-img[class^="avatar__"] {
-	border-radius: 1em;
-	width: 2em;
+foreignObject {
+	border-radius: var(--circle);
 }
 
 /* This is for the activitiy status*/
-div[class^="avatar__"] rect {
-	rx: 1em;
-	ry: 1em;
+div[class*="avatar__"] rect {
+	rx: var(--circle);
+	ry: var(--circle);
 }

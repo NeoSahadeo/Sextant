@@ -10,3 +10,15 @@
 [class^="scrollerInner__"] [class^="container__"] {
 	display: none;
 }
+
+/* Better Loading Screen */
+[class*="problems_"],
+[class*="tipTitle_"],
+/* [class*="spinner_"], */
+[class*="tip_"] {
+	display: none;
+}
+
+/* [class*="scrollerInner__"] [class*="wrapper_"] { */
+/* 	display: none; */
+/* } */
