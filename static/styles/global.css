@@ -4,3 +4,8 @@
 	transition: none !important;
 	animation: none !important;
 }
+
+/*Hide the download button*/
+[class^="stack_"] [class^="tutorialContainer_"]+[class^="listItem_"]+[class^="listItem_"] {
+	display: none;
+}
