@@ -31,8 +31,8 @@ import on_before_request from "./patches/onBeforeRequest";
 /***********/
 
 // Setters. Will change later
-import { set_request_limit } from "./patches/requestLimit";
-import { set_blocked_domains } from "./patches/blockDomain";
+import { request_limit } from "./patches/requestLimit";
+// import { set_blocked_domains } from "./patches/blockDomain";
 
 const user_config_path = path.join(
 	app.getPath("home"),
@@ -139,7 +139,7 @@ app.whenReady().then(async () => {
 
 		// Setting data. Will change later
 		// set_blocked_domains(settings.blocked_domains);
-		set_request_limit(settings.request_limit);
+		request_limit.set_request_limit(settings.request_limit);
 
 		plugin_handlers.forEach((e: Function) => e(settings));
 		create_window();
