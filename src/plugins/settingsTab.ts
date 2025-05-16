@@ -6,14 +6,10 @@ import { ipcMain } from "electron";
 
 export const settings_tab_handler = (s: any) => {
 	ipcMain.handle("load_settings", async () => {
-		const button = await load_file_content(
-			path.join("src", "components", "settingsButton.html"),
-		);
-
 		const tab = await load_file_content(
 			path.join("src", "components", "settingsTab.html"),
 		);
-		return [button, tab];
+		return tab;
 	});
 };
 
@@ -29,34 +25,19 @@ export const settings_tab: SextantPlugin = {
 				if (!stack_found && stack) {
 					stack_found = true;
 
-					const [button, tab] = await (window as any).electron.load_settings();
+					const script = document.createElement("script");
+					script.textContent = await (window as any).electron.load_file(
+						"build/components/settingsTab.js",
+					);
+					script.id = "sextant_settings_tab_script";
 
+					const tab = await (window as any).electron.load_settings();
+
+					document.body.appendChild(script);
 					stack.insertAdjacentHTML(
-						"beforeend",
-						`<div id="sextant_settings_tab_button" style="display:contents;">${button} `,
+						"afterbegin",
+						`<div id="sextant_settings_tab" style="display:contents;">${tab}</div>`,
 					);
-					stack.insertAdjacentHTML(
-						"beforeend",
-						`<div id="sextant_settings_tab" style="display:contents;">${tab} `,
-					);
-
-					const close_menu = document.getElementById(
-						"sextant_settings_tab_close_button",
-					);
-					const open_menu = document.getElementById(
-						"sextant_settings_tab_open_button",
-					);
-
-					open_menu!.addEventListener("click", () => {
-						document
-							.getElementById("sextant_settings_tab_menu")!
-							.classList.toggle("sextant_hide");
-					});
-					close_menu!.addEventListener("click", () => {
-						document
-							.getElementById("sextant_settings_tab_menu")!
-							.classList.toggle("sextant_hide");
-					});
 
 					observer.disconnect();
 				}

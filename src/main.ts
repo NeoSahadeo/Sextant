@@ -11,11 +11,14 @@ import { logger, load_file_content, root_path } from "./utils";
 import { PluginManager } from "./pluginManager";
 
 /**Plugins**/
-import { dynamic_styles } from "./plugins/dynamicStyles";
-import { dynamic_styles_handler } from "./plugins/dynamicStyles";
+import {
+	dynamic_styles,
+	dynamic_styles_handler,
+} from "./plugins/dynamicStyles";
 import { stop_propagration } from "./plugins/stopPropagation";
 import { better_stream } from "./plugins/betterStream";
 import { reduce_dom_size } from "./plugins/reduceDOMSize";
+import { settings_tab, settings_tab_handler } from "./plugins/settingsTab";
 /***********/
 
 /**Patches**/
@@ -42,12 +45,17 @@ const patches = [
 	//
 ];
 const plugins = [
+	settings_tab, // Load asap2
 	dynamic_styles,
 	better_stream,
 	reduce_dom_size,
 	// stop_propagration
 ];
-const plugin_handlers = [dynamic_styles_handler];
+const plugin_handlers = [
+	dynamic_styles_handler,
+	settings_tab_handler,
+	//
+];
 const manager = new PluginManager();
 
 function load_plugins() {
