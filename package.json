@@ -37,6 +37,10 @@
       "target": [
         "AppImage"
       ]
+    },
+    "win": {
+      "target": "msi",
+      "icon": "build/static/sextant.png"
     }
   },
   "keywords": [],
