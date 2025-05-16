@@ -61,6 +61,7 @@ const plugin_handlers = [
 	//
 ];
 const manager = new PluginManager();
+export let browser_window: BrowserWindow;
 
 function load_plugins() {
 	plugins.forEach((e) => manager.register(e));
@@ -70,7 +71,6 @@ function load_plugins() {
 	});
 }
 
-export let browser_window: BrowserWindow;
 function create_window() {
 	load_plugins();
 
@@ -122,6 +122,11 @@ function create_window() {
 		manager.list().forEach((e) => manager.unregister(e));
 		browser_window.webContents.executeJavaScript(manager.get_inject());
 	});
+
+	globalShortcut.register("Alt+F4", () => {
+		browser_window.hide();
+	});
+
 	globalShortcut.register("Control+Q", () => {
 		browser_window.close();
 	});
