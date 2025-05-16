@@ -1,6 +1,6 @@
 {
   "name": "Sextant",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A modified Discord Electron Wrapper to provide a better Discord experience",
   "main": "build/main.js",
   "type": "module",

@@ -1,10 +1,13 @@
 *,
 *::before,
 *::after {
-	transition: none !important;
-	animation: none !important;
+	/* transition: none !important; */
+	/* animation: none !important; */
 
 	--sextant_background: #546b7a;
+	--sextant_background_r: 84;
+	--sextant_background_g: 107;
+	--sextant_background_b: 122;
 }
 
 /*Hide the download button*/

@@ -4,6 +4,9 @@ declare global {
 		load(): () => {} | void;
 		unload?(): () => {} | void;
 	}
+	interface Window {
+		sextant_events: SextantEventListener;
+	}
 }
 
 export { };
