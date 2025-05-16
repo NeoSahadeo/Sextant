@@ -23,6 +23,7 @@ import { file_loader, file_loader_handler } from "./plugins/fileLoader";
 /***********/
 
 /**Patches**/
+import disable_csp from "./patches/disableCSP";
 import stream_patch from "./patches/stream";
 import on_before_request from "./patches/onBeforeRequest";
 /***********/
@@ -85,6 +86,9 @@ function create_window() {
 			devTools: settings.allow_dev_tools,
 		},
 	});
+
+	// Remove content security policy
+	disable_csp();
 
 	// Only show window when plugins have loaded
 	manager.addEventListener("loaded", () => {
