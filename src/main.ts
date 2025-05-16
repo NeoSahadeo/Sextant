@@ -19,6 +19,7 @@ import { stop_propagration } from "./plugins/stopPropagation";
 import { better_stream } from "./plugins/betterStream";
 import { reduce_dom_size } from "./plugins/reduceDOMSize";
 import { settings_tab, settings_tab_handler } from "./plugins/settingsTab";
+import { file_loader, file_loader_handler } from "./plugins/fileLoader";
 /***********/
 
 /**Patches**/
@@ -45,6 +46,7 @@ const patches = [
 	//
 ];
 const plugins = [
+	file_loader, // Load asap
 	settings_tab, // Load asap2
 	dynamic_styles,
 	better_stream,
@@ -52,6 +54,7 @@ const plugins = [
 	// stop_propagration
 ];
 const plugin_handlers = [
+	file_loader_handler,
 	dynamic_styles_handler,
 	settings_tab_handler,
 	//
