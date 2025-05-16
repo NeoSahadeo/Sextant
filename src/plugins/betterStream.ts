@@ -91,22 +91,24 @@ export const better_stream: SextantPlugin = {
 								} else {
 									timeout = 0;
 								}
+								// console.log("[Sextant Bitrate]", bitrate);
 								if (timeout === 10) {
 									console.log("[Sextant] Max timeout reached, closing scanner");
 									timeout = 0;
-									bitrate_stack = [];
+									// bitrate_stack = [];
 									clearInterval(scanner);
 								}
-								if (bitrate_stack.length == 10) {
-									bitrate_stack.splice(0, 1);
-								}
-								bitrate_stack.push(bitrate);
+								// if (bitrate_stack.length == 10) {
+								// 	bitrate_stack.splice(0, 1);
+								// }
+								// bitrate_stack.push(bitrate);
 
-								window.sextant_events.dispatchEvent("bitrate", [
+								window.sextant_events.dispatchEvent(
+									"bitrate",
 									bitrate,
-									bitrate_stack,
-								]);
-							}, 1000);
+									// bitrate_stack,
+								);
+							}, 250);
 						}
 						const transceiver = this.getTransceivers().find(
 							(t) => t.sender.track && t.sender.track.kind === "video",
