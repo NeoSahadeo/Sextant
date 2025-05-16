@@ -119,6 +119,11 @@ function create_window() {
 		browser_window.webContents.executeJavaScript(manager.get_inject());
 	});
 
+	browser_window.on("close", (event) => {
+		event.preventDefault(); // Prevent the default close behavior
+		browser_window.hide(); // Hide the window instead
+	});
+
 	globalShortcut.register("Control+R", () => {
 		logger("Reloading", "debug");
 		browser_window.webContents.executeJavaScript(
