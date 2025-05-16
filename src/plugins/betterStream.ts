@@ -60,7 +60,7 @@ export const better_stream: SextantPlugin = {
 					(window as any).local_rtc = this;
 
 					this.addEventListener("negotiationneeded", async () => {
-						let scanner = null;
+						let scanner: any = null;
 						const senders = this.getSenders().find(
 							(s) => s.track && s.track.kind === "video",
 						);
@@ -82,7 +82,26 @@ export const better_stream: SextantPlugin = {
 							}
 
 							console.log("[Sextant] Setting Up Scanner");
+							let timeout = 0;
+							let bitrate_stack: (number | null)[] = [];
 							scanner = setInterval(async () => {
+								const bitrate = await this.calculate_bitrate(senders);
+								if (!bitrate) {
+									timeout++;
+								} else {
+									timeout = 0;
+								}
+								if (timeout === 10) {
+									console.log("[Sextant] Max timeout reached, closing scanner");
+									timeout = 0;
+									bitrate_stack = [];
+									clearInterval(scanner);
+								}
+								if (bitrate_stack.length == 10) {
+									bitrate_stack.splice(0, 1);
+								}
+								bitrate_stack.push(bitrate);
+
 								window.sextant_events.dispatchEvent("bitrate", [
 									bitrate,
 									bitrate_stack,
@@ -102,6 +121,7 @@ export const better_stream: SextantPlugin = {
 				}
 				async calculate_bitrate(sender: RTCRtpSender) {
 					const stats = await sender.getStats();
+					let bitrate = null;
 					stats.forEach((report) => {
 						if (
 							report.type === "outbound-rtp" &&
@@ -114,14 +134,13 @@ export const better_stream: SextantPlugin = {
 							if (this.last_timestamp) {
 								const bytes_diff = bytes_sent - this.last_bytes_sent;
 								const time_diff = (timestamp - this.last_timestamp) / 1000; // seconds
-								const bitrate = (bytes_diff * 8) / time_diff / 1_000_000;
-								console.log(`[Sextant] Bitrate: ${bitrate.toFixed(3)} Mbps`);
+								bitrate = (bytes_diff * 8) / time_diff / 1_000_000;
 							}
-
 							this.last_bytes_sent = bytes_sent;
 							this.last_timestamp = timestamp;
 						}
 					});
+					return bitrate;
 				}
 			}
 
