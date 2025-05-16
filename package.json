@@ -1,15 +1,17 @@
 {
   "name": "Sextant",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A modified Discord Electron Wrapper to provide a better Discord experience",
   "main": "build/main.js",
   "type": "module",
   "scripts": {
     "dev": "tsc-watch --onSuccess 'bash dev.sh'",
+    "dev:vite": "vite",
     "start": "APP_DEV=true electron .",
     "compile": "rm -r build && tsc && tsc-alias",
     "build": "APP_DEV=false pnpm compile && electron-builder",
     "build:dev": "APP_DEV=true && pnpm compile && cp -r static build && electron-builder",
+    "build:vite": "vite build",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
@@ -25,6 +27,7 @@
       }
     ],
     "files": [
+      "src/components",
       "build",
       "static",
       "!**/*.map",
@@ -45,10 +48,11 @@
     "electron-builder": "^26.0.12",
     "tsc-alias": "^1.8.15",
     "tsc-watch": "^6.2.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "@types/node": "^22.15.18"
   },
   "dependencies": {
-    "toml": "^3.0.0",
-    "axios": "^1.9.0"
+    "axios": "^1.9.0",
+    "toml": "^3.0.0"
   }
 }

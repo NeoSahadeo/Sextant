@@ -17,6 +17,6 @@
     "resolveFullPaths": true,
     "verbose": false
   },
-  "include": ["src/**/*", "global.d.ts"],
-  "exclude": ["out"]
+  "include": ["src"],
+  // "exclude": ["out", "build", "components/**/*.js", "node_modules", "releases"]
 }
