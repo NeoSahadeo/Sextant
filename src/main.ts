@@ -39,6 +39,8 @@ const user_config_path = path.join(
 	"Sextant",
 	"settings.toml",
 );
+
+export let override_close = { value: false }; // Controls who can close the window. Kill
 export const pwd = dirname(fileURLToPath(import.meta.url));
 let settings: any; // This will be loaded from the setting.toml file in static
 
@@ -120,8 +122,13 @@ function create_window() {
 	});
 
 	browser_window.on("close", (event) => {
-		event.preventDefault(); // Prevent the default close behavior
-		browser_window.hide(); // Hide the window instead
+		if (override_close.value) {
+			override_close.value = false;
+			browser_window.close();
+		} else {
+			event.preventDefault(); // Prevent the default close behavior
+			browser_window.hide(); // Hide the window instead
+		}
 	});
 
 	globalShortcut.register("Control+R", () => {
@@ -132,12 +139,8 @@ function create_window() {
 		manager.list().forEach((e) => manager.unregister(e));
 		browser_window.webContents.executeJavaScript(manager.get_inject());
 	});
-
-	globalShortcut.register("Alt+F4", () => {
-		browser_window.hide();
-	});
-
 	globalShortcut.register("Control+Q", () => {
+		override_close.value = true;
 		browser_window.close();
 	});
 	// globalShortcut.register("Control+Shift+R", () => 0);
