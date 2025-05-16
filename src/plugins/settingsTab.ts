@@ -25,19 +25,18 @@ export const settings_tab: SextantPlugin = {
 				if (!stack_found && stack) {
 					stack_found = true;
 
-					const script = document.createElement("script");
-					script.textContent = await (window as any).electron.load_file(
-						"build/components/settingsTab.js",
-					);
-					script.id = "sextant_settings_tab_script";
-
-					const tab = await (window as any).electron.load_settings();
-
-					document.body.appendChild(script);
+					const tab = await (window as any).electron.load_settings(); // might change this to the new method
 					stack.insertAdjacentHTML(
 						"afterbegin",
 						`<div id="sextant_settings_tab" style="display:contents;">${tab}</div>`,
 					);
+
+					const script = document.createElement("script");
+					script.id = "sextant_settings_tab_script";
+					script.textContent = await (window as any).electron.load_file(
+						"build/components/settingsTab.js",
+					);
+					document.body.appendChild(script);
 
 					observer.disconnect();
 				}

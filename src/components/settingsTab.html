@@ -2,18 +2,20 @@
 	#sextant_settings_tab_menu {
 		width: 100vw;
 		height: 100dvh;
-		background-color: var(--sextant_background);
+		background-color: rgba(var(--sextant_background_r),
+				var(--sextant_background_g),
+				var(--sextant_background_b),
+				0.3);
+		/* Semi-transparent to see the blur */
 		z-index: 9999;
 		position: fixed;
 		left: 0px;
 		top: 0px;
-		padding: 0.4em;
-		display: grid;
-		grid-template-areas:
-			"h1 button"
-			". p .";
-		grid-template-columns: 1fr auto;
-		grid-template-rows: repeat(auto, 3);
+		display: flex;
+		flex-direction: column;
+		backdrop-filter: blur(1em);
+		/* Adjust the px value as needed */
+		-webkit-backdrop-filter: blur;
 	}
 
 	#sextant_settings_tab_menu * {
@@ -29,13 +31,24 @@
 
 	#sextant_settings_tab_close_button {
 		background-color: transparent;
-		height: min-content;
-		margin-right: 1em;
+		z-index: 9999;
+		margin-right: 0.6em;
+	}
+
+	#sextant_settings_tab_close_button * {
+		pointer-events: none;
+	}
+
+	#sextant_settings_tab_close_button:hover {
+		cursor: pointer;
 	}
 
 	.settings-button {
-		background-color: var(--background-mod-subtle);
-		border: none;
+		background-color: rgba(var(--sextant_background_r),
+				var(--sextant_background_g),
+				var(--sextant_background_b),
+				0.4);
+		border: 1px solid white;
 		color: white;
 		padding: 0.4em;
 		text-align: center;
@@ -74,13 +87,35 @@
 	</button>
 </div>
 <div id="sextant_settings_tab_menu" class="sextant_hide">
-	<h1>Sextant</h1>
-	<button onclick="sextant_toggle_menu()" id="sextant_settings_tab_close_button">
-		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-			<!-- Icon from Material Symbols by Google - https://github.com/google/material-design-icons/blob/master/LICENSE -->
-			<path fill="#ffffff"
-				d="m8.4 17l3.6-3.6l3.6 3.6l1.4-1.4l-3.6-3.6L17 8.4L15.6 7L12 10.6L8.4 7L7 8.4l3.6 3.6L7 15.6zm3.6 5q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22" />
-		</svg>
-	</button>
-	<p>Menu in progress...</p>
+	<div style="
+      background-color: grey;
+      margin-bottom: 1em;
+      padding: 0.3em 0em;
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+    ">
+		Pre-Alpha v0.0.6
+	</div>
+	<div style="display: flex; flex-direction: row; width: 100%">
+		<h1 style="
+        flex-grow: 1;
+        transform: translateX(-50%);
+        left: 50%;
+        position: relative;
+      ">
+			Sextant
+		</h1>
+		<button onclick="sextant_toggle_menu()" id="sextant_settings_tab_close_button">
+			<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+				<path fill="#ffffff"
+					d="m8.4 17l3.6-3.6l3.6 3.6l1.4-1.4l-3.6-3.6L17 8.4L15.6 7L12 10.6L8.4 7L7 8.4l3.6 3.6L7 15.6zm3.6 5q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22" />
+			</svg>
+		</button>
+	</div>
+	<div>
+		<p>Bitate:<span id="bitrate_display"></span></p>
+	</div>
 </div>
