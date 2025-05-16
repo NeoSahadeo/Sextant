@@ -16,6 +16,15 @@ A Discord Mod focused on better streaming, performance, and privacy.
   <a href="#license">License</a>
 </p>
 
+
+Currently, the main focus is Linux systems.
+
+# Key Features
+
+- Domain Blocker
+- Dom Size Reduction
+- Enchanced Stream Bitrate
+
 ---
 
 > GitHub [NeoSahado](https://github.com/NeoSahadeo)
