@@ -83,7 +83,10 @@ export const better_stream: SextantPlugin = {
 
 							console.log("[Sextant] Setting Up Scanner");
 							scanner = setInterval(async () => {
-								await this.calculate_bitrate(senders);
+								window.sextant_events.dispatchEvent("bitrate", [
+									bitrate,
+									bitrate_stack,
+								]);
 							}, 1000);
 						}
 						const transceiver = this.getTransceivers().find(

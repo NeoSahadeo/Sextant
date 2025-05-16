@@ -20,6 +20,7 @@ import { better_stream } from "./plugins/betterStream";
 import { reduce_dom_size } from "./plugins/reduceDOMSize";
 import { settings_tab, settings_tab_handler } from "./plugins/settingsTab";
 import { file_loader, file_loader_handler } from "./plugins/fileLoader";
+import { dispatcher } from "./plugins/dispatcher";
 /***********/
 
 /**Patches**/
@@ -47,6 +48,7 @@ const patches = [
 	//
 ];
 const plugins = [
+	dispatcher, // We them events
 	file_loader, // Load asap
 	settings_tab, // Load asap2
 	dynamic_styles,
@@ -119,6 +121,9 @@ function create_window() {
 
 	globalShortcut.register("Control+R", () => {
 		logger("Reloading", "debug");
+		browser_window.webContents.executeJavaScript(
+			`window.sextant_events.dispatchEvent("abort", null)`,
+		);
 		manager.list().forEach((e) => manager.unregister(e));
 		browser_window.webContents.executeJavaScript(manager.get_inject());
 	});
