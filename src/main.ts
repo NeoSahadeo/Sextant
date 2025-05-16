@@ -111,6 +111,7 @@ function create_window() {
 
 	globalShortcut.register("Control+R", () => {
 		logger("Reloading", "debug");
+		manager.list().forEach((e) => manager.unregister(e));
 		browser_window.webContents.executeJavaScript(manager.get_inject());
 	});
 	globalShortcut.register("Control+Q", () => {

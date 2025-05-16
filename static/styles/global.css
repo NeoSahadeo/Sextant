@@ -3,9 +3,15 @@
 *::after {
 	transition: none !important;
 	animation: none !important;
+
+	--sextant_background: #546b7a;
 }
 
 /*Hide the download button*/
 [class^="stack_"] [class^="tutorialContainer_"]+[class^="listItem_"]+[class^="listItem_"] {
 	display: none;
+}
+
+.sextant_hide {
+	display: none !important;
 }

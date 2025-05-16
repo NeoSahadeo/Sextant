@@ -19,7 +19,10 @@ export class PluginManager extends EventListener {
 	unregister(name: string) {
 		const index = this.plugins.findIndex((p) => p.name === name);
 		if (index !== -1) {
-			this.plugins[index].unload?.();
+			const injection = this.plugins[index].unload?.();
+			if (injection) {
+				this.inject += `(${injection})();`;
+			}
 			this.plugins.splice(index, 1);
 		}
 	}
