@@ -2,6 +2,16 @@ export const better_stream: SextantPlugin = {
 	name: "BetterStream",
 	load() {
 		return () => {
+			console.log("[Sextant] Initialising BetterStream");
+
+			const capabilities = RTCRtpSender.getCapabilities("video");
+			let vp8: any;
+			if (capabilities) {
+				const codecs = capabilities.codecs;
+				console.log("[Sextant] Available Codes: ", codecs);
+				vp8 = codecs.filter((codec) => codec.mimeType === "video/VP8");
+			}
+
 			const getDisplayMedia_old = navigator.mediaDevices.getDisplayMedia;
 
 			// Override the method
@@ -11,28 +21,24 @@ export const better_stream: SextantPlugin = {
 				const stream = await getDisplayMedia_old.apply(this, [constraints]);
 				const video_track = stream.getVideoTracks()[0];
 
-				const new_constraints: MediaTrackConstraints = {
-					...video_track.getConstraints(),
-					height: {
-						ideal: 1080,
-						exact: 1080,
-						max: 1080,
-					},
+				const custom_constraints: MediaTrackConstraints = {
 					width: {
 						ideal: 1920,
-						exact: 1920,
 						max: 1920,
 					},
+					height: {
+						ideal: 1080,
+						max: 1080,
+					},
 					frameRate: {
-						exact: 60,
-						ideal: 60,
-						max: 60,
+						ideal: 24,
+						max: 24,
 					},
 				};
 
-				console.log("[Sextant] Applying New Constraints", constraints);
+				console.log("[Sextant] Trying to apply custom contraints", constraints);
 				try {
-					await video_track.applyConstraints(new_constraints);
+					await video_track.applyConstraints(custom_constraints);
 					console.log("[Sextant] Constraints applied successfully");
 				} catch (err) {
 					console.error("[Sextant] Failed to apply constraints:", err);
@@ -41,32 +47,99 @@ export const better_stream: SextantPlugin = {
 				return stream;
 			};
 
-			const rtcPeerConnection_old = window.RTCPeerConnection;
-			class SextantRTCConnection extends rtcPeerConnection_old {
+			const rtc_peer_connection_old = window.RTCPeerConnection;
+			const rtc_create_offer_old =
+				rtc_peer_connection_old.prototype.createOffer;
+
+			class SextantRTCConnection extends rtc_peer_connection_old {
+				last_bytes_sent = 0;
+				last_timestamp = 0;
+
 				constructor(...args: any) {
-					console.log("[Sextant] Creating PeerConnection with config:", args);
 					super(...args);
-					console.log("[Sextant] Senders: ", this.getSenders());
 					(window as any).local_rtc = this;
 
-					this.addEventListener("negotiationneeded", () => {
-						// Check for changes in getSenders()
+					this.addEventListener("negotiationneeded", async () => {
+						let scanner = null;
 						const senders = this.getSenders().find(
 							(s) => s.track && s.track.kind === "video",
 						);
 						if (senders) {
 							const params = senders.getParameters();
-							params.encodings[0].maxBitrate = 2500_000;
-							params.encodings[0].maxFramerate = 60;
+							params.encodings[0].maxBitrate = 2_500_000;
 							params.encodings[0].networkPriority = "high";
-							senders.setParameters(params);
-							console.log("[Sextant] Senders:", senders);
-							console.log("[Sextant] Params:", params);
+							params.encodings[0].priority = "high";
+
+							console.log("[Sextant] Trying to update encoding parameters");
+							try {
+								await senders.setParameters(params);
+								console.log("[Sextant] Parameters set successfully");
+							} catch (e) {
+								console.error("[Sextant] Failed to set parameters:", e);
+							}
+							if (scanner) {
+								clearInterval(scanner);
+							}
+
+							console.log("[Sextant] Setting Up Scanner");
+							scanner = setInterval(async () => {
+								await this.calculate_bitrate(senders);
+							}, 1000);
 						}
+						const transceiver = this.getTransceivers().find(
+							(t) => t.sender.track && t.sender.track.kind === "video",
+						);
+						if (transceiver && vp8.length) {
+							console.log("[Sextant] Transceiver: ", transceiver);
+							transceiver.setCodecPreferences(vp8);
+						}
+
 						// Compare with previous state or handle as needed
 					});
 				}
+				async calculate_bitrate(sender: RTCRtpSender) {
+					const stats = await sender.getStats();
+					stats.forEach((report) => {
+						if (
+							report.type === "outbound-rtp" &&
+							!report.isRemote &&
+							report.kind === "video"
+						) {
+							const bytes_sent = report.bytesSent;
+							const timestamp = report.timestamp; // in ms
+
+							if (this.last_timestamp) {
+								const bytes_diff = bytes_sent - this.last_bytes_sent;
+								const time_diff = (timestamp - this.last_timestamp) / 1000; // seconds
+								const bitrate = (bytes_diff * 8) / time_diff / 1_000_000;
+								console.log(`[Sextant] Bitrate: ${bitrate.toFixed(3)} Mbps`);
+							}
+
+							this.last_bytes_sent = bytes_sent;
+							this.last_timestamp = timestamp;
+						}
+					});
+				}
 			}
+
+			//@ts-ignore
+			// SextantRTCConnection.prototype.createOffer = function() {
+			// 	console.log("[Sextant] RTC Object", this.currentLocalDescription);
+			// 	rtc_create_offer_old.call(
+			// 		this,
+			// 		() => {
+			// 			try {
+			// 				if (this.currentLocalDescription)
+			// 					this.setLocalDescription(this.currentLocalDescription);
+			// 				console.log("[Sextant] Setting Local Description Passed");
+			// 			} catch {
+			// 				console.log("[Sextant] Setting Local Description Failed");
+			// 			}
+			// 		},
+			// 		() => { },
+			// 	);
+			// };
+
 			window.RTCPeerConnection = SextantRTCConnection;
 		};
 	},
