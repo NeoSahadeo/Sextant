@@ -12,15 +12,15 @@ A Discord Mod focused on better streaming, performance, and privacy.
 
 <p align="center">
   <a href="#key-features">Key Features</a> •
-  <a href="#download">Download</a> •
-  <a href="#license">License</a>
+  <a href="#download">Downloads</a> •
 </p>
 
 
-Currently, the main focus is Linux systems.
+Currently, the main focus is Linux systems. Windows and Mac might work with some modifications. A version for Windows will eventually be built once version 1 of Sextant is released.
 
 # Key Features
 
+- Allows existing CSS themes from sites like <a href="https://betterdiscord.app/themes">Better Discord</a>
 - Domain Blocker
 - Dom Size Reduction
 - Enchanced Stream Bitrate
