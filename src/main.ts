@@ -3,14 +3,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import fs from "node:fs";
 
-import {
-	app,
-	BrowserWindow,
-	globalShortcut,
-	ipcMain,
-	session,
-	desktopCapturer,
-} from "electron";
+import { app, BrowserWindow, globalShortcut, powerSaveBlocker } from "electron";
 import toml from "toml";
 
 import tray_icon from "./electrons/tray_icon";
@@ -132,6 +125,9 @@ async function loaded_settings() {
 }
 
 app.whenReady().then(async () => {
+	const id = powerSaveBlocker.start("prevent-display-sleep");
+	logger("Prevent Display Sleep: " + powerSaveBlocker.isStarted(id), "info");
+
 	patches.forEach((e) => e());
 
 	tray_icon();
