@@ -1,5 +1,5 @@
 export const dispatcher: SextantPlugin = {
-	name: "BetterStream",
+	name: "Dispatcher",
 	load() {
 		return () => {
 			class EventListener {

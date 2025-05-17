@@ -16,7 +16,7 @@ import {
 	dynamic_styles,
 	dynamic_styles_handler,
 } from "./plugins/dynamicStyles";
-import { stop_propagration } from "./plugins/stopPropagation";
+import { stop_propagation } from "./plugins/stopPropagation";
 import { better_stream } from "./plugins/betterStream";
 import { reduce_dom_size } from "./plugins/reduceDOMSize";
 import { settings_tab, settings_tab_handler } from "./plugins/settingsTab";

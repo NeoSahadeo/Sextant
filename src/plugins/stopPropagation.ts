@@ -1,5 +1,5 @@
-export const stop_propagration: SextantPlugin = {
-	name: "StopPropagration",
+export const stop_propagation: SextantPlugin = {
+	name: "StopPropagation",
 	load() {
 		return () => {
 			const events = [
