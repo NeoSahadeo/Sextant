@@ -9,6 +9,7 @@ import toml from "toml";
 import tray_icon from "./electrons/tray_icon";
 import { logger, load_file_content, root_path } from "./utils";
 import { PluginManager } from "./pluginManager";
+import external_config from "./electrons/externalConfig";
 
 /**Plugins**/
 import {
@@ -33,16 +34,12 @@ import on_before_request from "./patches/onBeforeRequest";
 import { request_limit } from "./patches/requestLimit";
 // import { set_blocked_domains } from "./patches/blockDomain";
 
-const user_config_path = path.join(
-	app.getPath("home"),
-	".config",
-	"Sextant",
-	"settings.toml",
-);
-
 export let override_close = { value: false }; // Controls who can close the window. Kill
 export const pwd = dirname(fileURLToPath(import.meta.url));
 let settings: any; // This will be loaded from the setting.toml file in static
+
+// This is the newer user config file that will control everything!
+export let config: any = {};
 
 const patches = [
 	stream_patch,
@@ -68,7 +65,9 @@ const manager = new PluginManager();
 export let browser_window: BrowserWindow;
 
 function load_plugins() {
-	plugins.forEach((e) => manager.register(e));
+	const desired_plugins = plugins.filter((e) => config.Plugins[e.name]);
+
+	desired_plugins.forEach((e) => manager.register(e));
 
 	manager.list().forEach((e) => {
 		logger(`Plugin Loaded: ${e}`, "info");
@@ -76,8 +75,6 @@ function load_plugins() {
 }
 
 function create_window() {
-	load_plugins();
-
 	browser_window = new BrowserWindow({
 		width: settings.width,
 		height: settings.height,
@@ -162,7 +159,9 @@ app.whenReady().then(async () => {
 	logger("Prevent Display Sleep: " + powerSaveBlocker.isStarted(id), "info");
 
 	patches.forEach((e) => e());
+	config = await external_config();
 
+	load_plugins();
 	tray_icon();
 
 	const data = await loaded_settings();

@@ -96,5 +96,26 @@ function load_file_content(file_path: string): Promise<null | string> {
 		});
 	});
 }
+function direct_file_load(file_path: string): Promise<null | string> {
+	return new Promise((resolve, reject) => {
+		fs.readFile(file_path, "utf-8", (err, data) => {
+			if (err) {
+				logger(
+					`Something happend when trying to read the file: ${file_path}`,
+					"error",
+				);
+				reject(null);
+			} else {
+				resolve(data);
+			}
+		});
+	});
+}
 
-export { load_file_content, logger, root_path, EventListener };
+export {
+	load_file_content,
+	logger,
+	root_path,
+	EventListener,
+	direct_file_load,
+};

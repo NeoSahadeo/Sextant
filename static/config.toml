@@ -1,0 +1,18 @@
+# Fallback file
+[Plugins]
+# Disabling these will break functionality
+DynamicStyles = true
+Dispatcher = true
+FileLoader = true
+BetterStream = true
+SettingsTab = true
+##########################################
+
+# This can be configured as u wish!
+ReduceDOMSize = true
+StopPropagation = true
+###################################
+
+[Settings]
+[Locations]
+[Logs]
