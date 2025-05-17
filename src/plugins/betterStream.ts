@@ -66,7 +66,7 @@ export const better_stream: SextantPlugin = {
 						);
 						if (senders) {
 							const params = senders.getParameters();
-							params.encodings[0].maxBitrate = 2_500_000;
+							params.encodings[0].maxBitrate = 1_000_000;
 							params.encodings[0].networkPriority = "high";
 							params.encodings[0].priority = "high";
 
@@ -83,7 +83,6 @@ export const better_stream: SextantPlugin = {
 
 							console.log("[Sextant] Setting Up Scanner");
 							let timeout = 0;
-							let bitrate_stack: (number | null)[] = [];
 							scanner = setInterval(async () => {
 								const bitrate = await this.calculate_bitrate(senders);
 								if (!bitrate) {
@@ -91,23 +90,13 @@ export const better_stream: SextantPlugin = {
 								} else {
 									timeout = 0;
 								}
-								// console.log("[Sextant Bitrate]", bitrate);
 								if (timeout === 10) {
 									console.log("[Sextant] Max timeout reached, closing scanner");
 									timeout = 0;
-									// bitrate_stack = [];
 									clearInterval(scanner);
 								}
-								// if (bitrate_stack.length == 10) {
-								// 	bitrate_stack.splice(0, 1);
-								// }
-								// bitrate_stack.push(bitrate);
 
-								window.sextant_events.dispatchEvent(
-									"bitrate",
-									bitrate,
-									// bitrate_stack,
-								);
+								window.sextant_events.dispatchEvent("bitrate", bitrate);
 							}, 250);
 						}
 						const transceiver = this.getTransceivers().find(
@@ -117,8 +106,6 @@ export const better_stream: SextantPlugin = {
 							console.log("[Sextant] Transceiver: ", transceiver);
 							transceiver.setCodecPreferences(vp8);
 						}
-
-						// Compare with previous state or handle as needed
 					});
 				}
 				async calculate_bitrate(sender: RTCRtpSender) {
@@ -147,6 +134,7 @@ export const better_stream: SextantPlugin = {
 			}
 
 			//@ts-ignore
+			// Munging
 			// SextantRTCConnection.prototype.createOffer = function() {
 			// 	console.log("[Sextant] RTC Object", this.currentLocalDescription);
 			// 	rtc_create_offer_old.call(
