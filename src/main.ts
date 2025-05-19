@@ -9,17 +9,19 @@ import toml from "toml";
 import tray_icon from "./electrons/tray_icon";
 import { logger, load_file_content, root_path } from "./utils";
 import { PluginManager } from "./pluginManager";
+import external_config from "./electrons/externalConfig";
 
 /**Plugins**/
 import {
 	dynamic_styles,
 	dynamic_styles_handler,
 } from "./plugins/dynamicStyles";
-import { stop_propagration } from "./plugins/stopPropagation";
+import { stop_propagation } from "./plugins/stopPropagation";
 import { better_stream } from "./plugins/betterStream";
 import { reduce_dom_size } from "./plugins/reduceDOMSize";
 import { settings_tab, settings_tab_handler } from "./plugins/settingsTab";
 import { file_loader, file_loader_handler } from "./plugins/fileLoader";
+import { dispatcher } from "./plugins/dispatcher";
 /***********/
 
 /**Patches**/
@@ -32,14 +34,11 @@ import on_before_request from "./patches/onBeforeRequest";
 import { request_limit } from "./patches/requestLimit";
 // import { set_blocked_domains } from "./patches/blockDomain";
 
-const user_config_path = path.join(
-	app.getPath("home"),
-	".config",
-	"Sextant",
-	"settings.toml",
-);
+export let override_close = { value: false }; // Controls who can close the window. Kill
 export const pwd = dirname(fileURLToPath(import.meta.url));
-let settings: any; // This will be loaded from the setting.toml file in static
+//
+// This is the newer user config file that will control everything!
+export let config: any = {};
 
 const patches = [
 	stream_patch,
@@ -47,12 +46,12 @@ const patches = [
 	//
 ];
 const plugins = [
+	dispatcher, // We them events
 	file_loader, // Load asap
 	settings_tab, // Load asap2
 	dynamic_styles,
 	better_stream,
 	reduce_dom_size,
-	// stop_propagration
 ];
 const plugin_handlers = [
 	file_loader_handler,
@@ -61,29 +60,31 @@ const plugin_handlers = [
 	//
 ];
 const manager = new PluginManager();
+export let browser_window: BrowserWindow;
 
 function load_plugins() {
-	plugins.forEach((e) => manager.register(e));
+	const desired_plugins = plugins.filter((e) =>
+		config.Plugins[e.name] === undefined ? true : config.Plugins[e.name],
+	);
+
+	desired_plugins.forEach((e) => manager.register(e, config));
 
 	manager.list().forEach((e) => {
 		logger(`Plugin Loaded: ${e}`, "info");
 	});
 }
 
-export let browser_window: BrowserWindow;
 function create_window() {
-	load_plugins();
-
 	browser_window = new BrowserWindow({
-		width: settings.width,
-		height: settings.height,
-		show: settings.show_boot,
-		autoHideMenuBar: settings.hide_menu_bar,
-		transparent: settings.transparent,
+		width: config.Settings.width,
+		height: config.Settings.height,
+		show: config.Settings.show_boot,
+		autoHideMenuBar: config.Settings.hide_menu_bar,
+		transparent: config.Settings.transparent,
 		frame: true,
 		webPreferences: {
 			preload: path.join(pwd, "preload.js"),
-			devTools: settings.allow_dev_tools,
+			devTools: config.Settings.allow_dev_tools,
 		},
 	});
 
@@ -105,10 +106,10 @@ function create_window() {
 	});
 
 	// Load Settings
-	if (settings.show_dev_tools_on_boot) {
+	if (config.Settings.show_dev_tools_on_boot) {
 		browser_window.webContents.openDevTools();
 	}
-	if (!settings.allow_menu_bar) {
+	if (!config.Settings.allow_menu_bar) {
 		browser_window.setMenu(null);
 	}
 
@@ -117,26 +118,29 @@ function create_window() {
 		browser_window.webContents.executeJavaScript(manager.get_inject());
 	});
 
+	browser_window.on("close", (event) => {
+		if (override_close.value) {
+			override_close.value = false;
+			browser_window.close();
+		} else {
+			event.preventDefault(); // Prevent the default close behavior
+			browser_window.hide(); // Hide the window instead
+		}
+	});
+
 	globalShortcut.register("Control+R", () => {
 		logger("Reloading", "debug");
+		browser_window.webContents.executeJavaScript(
+			`window.sextant_events.dispatchEvent("abort", null)`,
+		);
 		manager.list().forEach((e) => manager.unregister(e));
 		browser_window.webContents.executeJavaScript(manager.get_inject());
 	});
 	globalShortcut.register("Control+Q", () => {
+		override_close.value = true;
 		browser_window.close();
 	});
 	// globalShortcut.register("Control+Shift+R", () => 0);
-}
-
-async function loaded_settings() {
-	return await load_file_content(path.join("static", "settings.toml"));
-	if (process.env.APP_DEV) {
-		return await load_file_content(path.join("static", "settings.toml"));
-	} else {
-		return await load_file_content(
-			path.join(process.resourcesPath, "static", "settings.toml"),
-		);
-	}
 }
 
 app.whenReady().then(async () => {
@@ -144,18 +148,17 @@ app.whenReady().then(async () => {
 	logger("Prevent Display Sleep: " + powerSaveBlocker.isStarted(id), "info");
 
 	patches.forEach((e) => e());
+	config = await external_config();
 
+	load_plugins();
 	tray_icon();
 
-	const data = await loaded_settings();
-	if (data) {
-		settings = toml.parse(data);
-
+	if (config) {
 		// Setting data. Will change later
 		// set_blocked_domains(settings.blocked_domains);
-		request_limit.set_request_limit(settings.request_limit);
+		request_limit.set_request_limit(config.Settings.request_limit);
 
-		plugin_handlers.forEach((e: Function) => e(settings));
+		plugin_handlers.forEach((e: Function) => e(config));
 		create_window();
 	}
 });

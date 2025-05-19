@@ -12,3 +12,11 @@ div[class*="avatar__"] rect {
 	rx: var(--circle);
 	ry: var(--circle);
 }
+
+/* Transparency on the content stream windows*/
+[class*="wrapper_"],
+[class*="callContainer_"],
+[class*="callContainer_"] * {
+	background-color: transparent !important;
+	background: transparent !important;
+}

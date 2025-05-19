@@ -1,0 +1,30 @@
+[Plugins]
+# Disabling these will break functionality
+DynamicStyles = true
+Dispatcher = true
+FileLoader = true
+BetterStream = true
+SettingsTab = true
+##########################################
+
+# This can be configured as u wish!
+ReduceDOMSize = true
+StopPropagation = true
+###################################
+
+[Settings]
+width = 600
+heigth = 800
+show_boot = false
+show_dev_tools_on_boot = true
+hide_menu_bar = true
+allow_menu_bar = true
+allow_dev_tools = true
+transparent = false
+
+dynamic_css_folders = ["static/styles"]
+request_limit = 50
+blocked_domains = []
+
+[Locations]
+[Logs]

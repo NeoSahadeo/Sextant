@@ -1,6 +1,8 @@
+import { logger } from "../utils";
+
 export const better_stream: SextantPlugin = {
 	name: "BetterStream",
-	load() {
+	load(config: any) {
 		return () => {
 			console.log("[Sextant] Initialising BetterStream");
 
@@ -60,13 +62,13 @@ export const better_stream: SextantPlugin = {
 					(window as any).local_rtc = this;
 
 					this.addEventListener("negotiationneeded", async () => {
-						let scanner = null;
+						let scanner: any = null;
 						const senders = this.getSenders().find(
 							(s) => s.track && s.track.kind === "video",
 						);
 						if (senders) {
 							const params = senders.getParameters();
-							params.encodings[0].maxBitrate = 2_500_000;
+							params.encodings[0].maxBitrate = 1_000_000;
 							params.encodings[0].networkPriority = "high";
 							params.encodings[0].priority = "high";
 
@@ -82,9 +84,22 @@ export const better_stream: SextantPlugin = {
 							}
 
 							console.log("[Sextant] Setting Up Scanner");
+							let timeout = 0;
 							scanner = setInterval(async () => {
-								await this.calculate_bitrate(senders);
-							}, 1000);
+								const bitrate = await this.calculate_bitrate(senders);
+								if (!bitrate) {
+									timeout++;
+								} else {
+									timeout = 0;
+								}
+								if (timeout === 10) {
+									console.log("[Sextant] Max timeout reached, closing scanner");
+									timeout = 0;
+									clearInterval(scanner);
+								}
+
+								window.sextant_events.dispatchEvent("bitrate", bitrate);
+							}, 250);
 						}
 						const transceiver = this.getTransceivers().find(
 							(t) => t.sender.track && t.sender.track.kind === "video",
@@ -93,12 +108,11 @@ export const better_stream: SextantPlugin = {
 							console.log("[Sextant] Transceiver: ", transceiver);
 							transceiver.setCodecPreferences(vp8);
 						}
-
-						// Compare with previous state or handle as needed
 					});
 				}
 				async calculate_bitrate(sender: RTCRtpSender) {
 					const stats = await sender.getStats();
+					let bitrate = null;
 					stats.forEach((report) => {
 						if (
 							report.type === "outbound-rtp" &&
@@ -111,18 +125,18 @@ export const better_stream: SextantPlugin = {
 							if (this.last_timestamp) {
 								const bytes_diff = bytes_sent - this.last_bytes_sent;
 								const time_diff = (timestamp - this.last_timestamp) / 1000; // seconds
-								const bitrate = (bytes_diff * 8) / time_diff / 1_000_000;
-								console.log(`[Sextant] Bitrate: ${bitrate.toFixed(3)} Mbps`);
+								bitrate = (bytes_diff * 8) / time_diff / 1_000_000;
 							}
-
 							this.last_bytes_sent = bytes_sent;
 							this.last_timestamp = timestamp;
 						}
 					});
+					return bitrate;
 				}
 			}
 
 			//@ts-ignore
+			// Munging
 			// SextantRTCConnection.prototype.createOffer = function() {
 			// 	console.log("[Sextant] RTC Object", this.currentLocalDescription);
 			// 	rtc_create_offer_old.call(

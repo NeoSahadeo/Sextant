@@ -5,12 +5,12 @@ import fs from "node:fs";
 import { ipcMain } from "electron";
 import { logger, load_file_content, root_path } from "../utils";
 
-export const dynamic_styles_handler = (s: any) => {
+export const dynamic_styles_handler = (config: any) => {
 	ipcMain.handle("load_css", async () => {
 		let id = 0;
 		let data = "";
 
-		for (const folder of s.dynamic_css_folders) {
+		for (const folder of config.Settings.dynamic_css_folders) {
 			const folder_path = folder.split("/");
 
 			try {
