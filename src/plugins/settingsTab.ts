@@ -4,12 +4,19 @@ import path from "node:path";
 import { load_file_content, logger } from "../utils";
 import { ipcMain } from "electron";
 
-export const settings_tab_handler = (s: any) => {
+export const settings_tab_handler = (config: any) => {
 	ipcMain.handle("load_settings", async () => {
+		let bitrate_montior = null;
+
 		const tab = await load_file_content(
 			path.join("src", "components", "settingsTab.html"),
 		);
-		return tab;
+		if (config.Plugins.BetterStream) {
+			bitrate_montior = await load_file_content(
+				path.join("src", "components", "bitrateMonitor.html"),
+			);
+		}
+		return [tab, bitrate_montior];
 	});
 };
 

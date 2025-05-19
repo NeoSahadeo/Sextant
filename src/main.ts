@@ -36,8 +36,7 @@ import { request_limit } from "./patches/requestLimit";
 
 export let override_close = { value: false }; // Controls who can close the window. Kill
 export const pwd = dirname(fileURLToPath(import.meta.url));
-let settings: any; // This will be loaded from the setting.toml file in static
-
+//
 // This is the newer user config file that will control everything!
 export let config: any = {};
 
@@ -53,7 +52,6 @@ const plugins = [
 	dynamic_styles,
 	better_stream,
 	reduce_dom_size,
-	// stop_propagration
 ];
 const plugin_handlers = [
 	file_loader_handler,
@@ -65,9 +63,11 @@ const manager = new PluginManager();
 export let browser_window: BrowserWindow;
 
 function load_plugins() {
-	const desired_plugins = plugins.filter((e) => config.Plugins[e.name]);
+	const desired_plugins = plugins.filter((e) =>
+		config.Plugins[e.name] === undefined ? true : config.Plugins[e.name],
+	);
 
-	desired_plugins.forEach((e) => manager.register(e));
+	desired_plugins.forEach((e) => manager.register(e, config));
 
 	manager.list().forEach((e) => {
 		logger(`Plugin Loaded: ${e}`, "info");
@@ -76,15 +76,15 @@ function load_plugins() {
 
 function create_window() {
 	browser_window = new BrowserWindow({
-		width: settings.width,
-		height: settings.height,
-		show: settings.show_boot,
-		autoHideMenuBar: settings.hide_menu_bar,
-		transparent: settings.transparent,
+		width: config.Settings.width,
+		height: config.Settings.height,
+		show: config.Settings.show_boot,
+		autoHideMenuBar: config.Settings.hide_menu_bar,
+		transparent: config.Settings.transparent,
 		frame: true,
 		webPreferences: {
 			preload: path.join(pwd, "preload.js"),
-			devTools: settings.allow_dev_tools,
+			devTools: config.Settings.allow_dev_tools,
 		},
 	});
 
@@ -106,10 +106,10 @@ function create_window() {
 	});
 
 	// Load Settings
-	if (settings.show_dev_tools_on_boot) {
+	if (config.Settings.show_dev_tools_on_boot) {
 		browser_window.webContents.openDevTools();
 	}
-	if (!settings.allow_menu_bar) {
+	if (!config.Settings.allow_menu_bar) {
 		browser_window.setMenu(null);
 	}
 
@@ -143,17 +143,6 @@ function create_window() {
 	// globalShortcut.register("Control+Shift+R", () => 0);
 }
 
-async function loaded_settings() {
-	return await load_file_content(path.join("static", "settings.toml"));
-	if (process.env.APP_DEV) {
-		return await load_file_content(path.join("static", "settings.toml"));
-	} else {
-		return await load_file_content(
-			path.join(process.resourcesPath, "static", "settings.toml"),
-		);
-	}
-}
-
 app.whenReady().then(async () => {
 	const id = powerSaveBlocker.start("prevent-display-sleep");
 	logger("Prevent Display Sleep: " + powerSaveBlocker.isStarted(id), "info");
@@ -164,15 +153,12 @@ app.whenReady().then(async () => {
 	load_plugins();
 	tray_icon();
 
-	const data = await loaded_settings();
-	if (data) {
-		settings = toml.parse(data);
-
+	if (config) {
 		// Setting data. Will change later
 		// set_blocked_domains(settings.blocked_domains);
-		request_limit.set_request_limit(settings.request_limit);
+		request_limit.set_request_limit(config.Settings.request_limit);
 
-		plugin_handlers.forEach((e: Function) => e(settings));
+		plugin_handlers.forEach((e: Function) => e(config));
 		create_window();
 	}
 });

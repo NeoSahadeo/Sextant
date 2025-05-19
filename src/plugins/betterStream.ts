@@ -1,6 +1,8 @@
+import { logger } from "../utils";
+
 export const better_stream: SextantPlugin = {
 	name: "BetterStream",
-	load() {
+	load(config: any) {
 		return () => {
 			console.log("[Sextant] Initialising BetterStream");
 

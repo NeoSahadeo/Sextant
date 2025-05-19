@@ -1,7 +1,7 @@
 declare global {
 	interface SextantPlugin {
 		name: string;
-		load(): () => {} | void;
+		load(config?: any): () => {} | void;
 		unload?(): () => {} | void;
 	}
 	interface Window {

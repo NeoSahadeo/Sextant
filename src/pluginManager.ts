@@ -1,4 +1,4 @@
-import { EventListener } from "./utils";
+import { EventListener, logger } from "./utils";
 
 export class PluginManager extends EventListener {
 	private plugins: SextantPlugin[] = [];
@@ -8,8 +8,8 @@ export class PluginManager extends EventListener {
 		super();
 	}
 
-	register(plugin: SextantPlugin) {
-		const injection = plugin.load();
+	register(plugin: SextantPlugin, config?: any) {
+		const injection = plugin.load(config);
 		if (injection) {
 			this.inject += `(${injection})();`;
 		}
