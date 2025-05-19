@@ -26,25 +26,34 @@ export const settings_tab: SextantPlugin = {
 		return () => {
 			console.log("[Sextant] Loading Settings");
 			let stack_found = false; // Avoid too many calls
-
 			const observer = new MutationObserver(async (mutations) => {
 				const stack = document.querySelector('[class^="stack_"]');
 				if (!stack_found && stack) {
 					stack_found = true;
+					// Default Script
+					const script = document.createElement("script");
+					script.id = "sextant_settings_tab_script";
+					script.textContent += await (window as any).electron.load_file(
+						"build/components/settingsTab.js",
+					);
 
-					const tab = await (window as any).electron.load_settings(); // might change this to the new method
+					const [tab, bitrate_montior] = await (
+						window as any
+					).electron.load_settings(); // might change this to the new method
+
 					stack.insertAdjacentHTML(
 						"afterbegin",
 						`<div id="sextant_settings_tab" style="display:contents;">${tab}</div>`,
 					);
+					if (bitrate_montior) {
+						const element = document.getElementById("bitrateMonitor");
+						element?.insertAdjacentHTML("afterbegin", bitrate_montior);
+						script.textContent += await (window as any).electron.load_file(
+							"build/components/bitrateMonitor.js",
+						);
+					}
 
-					const script = document.createElement("script");
-					script.id = "sextant_settings_tab_script";
-					script.textContent = await (window as any).electron.load_file(
-						"build/components/settingsTab.js",
-					);
 					document.body.appendChild(script);
-
 					observer.disconnect();
 				}
 			});
