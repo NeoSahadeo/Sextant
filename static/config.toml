@@ -1,4 +1,3 @@
-# Fallback file
 [Plugins]
 # Disabling these will break functionality
 DynamicStyles = true

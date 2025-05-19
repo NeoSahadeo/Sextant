@@ -1,5 +1,6 @@
 {
   "name": "Sextant",
+  "email": "neosahadeo@protonmail.com",
   "version": "0.0.61",
   "description": "A modified Discord Electron Wrapper to provide a better Discord experience",
   "main": "build/main.js",
@@ -34,9 +35,11 @@
       "!docs"
     ],
     "linux": {
+      "category": "Communication",
       "target": [
-        "AppImage"
-      ]
+        "pacman"
+      ],
+      "maintainer": "Neo Sahadeo <neosahadeo@protonmail.com>"
     },
     "win": {
       "target": "msi",
