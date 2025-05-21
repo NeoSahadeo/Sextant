@@ -8,6 +8,7 @@ SettingsTab = true
 ##########################################
 
 # This can be configured as u wish!
+BitrateMonitor = false
 ReduceDOMSize = true
 StopPropagation = true
 ###################################
@@ -28,3 +29,6 @@ blocked_domains = []
 
 [Locations]
 [Logs]
+
+[BetterStream]
+background_color = "red"
