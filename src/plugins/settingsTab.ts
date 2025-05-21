@@ -11,12 +11,12 @@ export const settings_tab_handler = (config: any) => {
 		const tab = await load_file_content(
 			path.join("src", "components", "settingsTab.html"),
 		);
-		if (config.Plugins.BetterStream) {
-			bitrate_montior = await load_file_content(
-				path.join("src", "components", "bitrateMonitor.html"),
-			);
-		}
-		return [tab, bitrate_montior];
+		// if (config.Plugins.BitrateMonitor) {
+		// 	bitrate_montior = await load_file_content(
+		// 		path.join("src", "components", "bitrateMonitor.html"),
+		// 	);
+		// }
+		return tab;
 	});
 };
 
@@ -30,29 +30,33 @@ export const settings_tab: SextantPlugin = {
 				const stack = document.querySelector('[class^="stack_"]');
 				if (!stack_found && stack) {
 					stack_found = true;
-					// Default Script
+					// Default Settings Script
 					const script = document.createElement("script");
 					script.id = "sextant_settings_tab_script";
 					script.textContent += await (window as any).electron.load_file(
 						"build/components/settingsTab.js",
 					);
 
-					const [tab, bitrate_montior] = await (
-						window as any
-					).electron.load_settings(); // might change this to the new method
+					const tab = await (window as any).electron.load_settings(); // might change this to the new method
 
 					stack.insertAdjacentHTML(
 						"afterbegin",
 						`<div id="sextant_settings_tab" style="display:contents;">${tab}</div>`,
 					);
-					if (bitrate_montior) {
-						const element = document.getElementById("bitrateMonitor");
-						element?.insertAdjacentHTML("afterbegin", bitrate_montior);
-						script.textContent += await (window as any).electron.load_file(
-							"build/components/bitrateMonitor.js",
-						);
-					}
 
+					// TODO - REPLACE WITH REGISTER FUNCTION
+					// const p = await window.electron.load_file(
+					// 	"src/components/bitrateMonitor.html",
+					// );
+					// console.log("Sextant", p);
+					// if (bitrate_montior) {
+					// 	const element = document.getElementById("bitrateMonitor");
+					// 	element?.insertAdjacentHTML("afterbegin", bitrate_montior);
+					// 	script.textContent += await (window as any).electron.load_file(
+					// 		"build/components/bitrateMonitor.js",
+					// 	);
+					// }
+					//
 					document.body.appendChild(script);
 					observer.disconnect();
 				}

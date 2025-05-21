@@ -1,19 +1,19 @@
 function sextant_toggle_menu() {
-	let start_services = false;
+	// let start_services = false;
 	const element = document.getElementById("sextant_settings_tab_menu");
 	if (element) {
-		start_services = !element.classList.contains("sextant_hide");
+		// start_services = !element.classList.contains("sextant_hide");
 		element.classList.toggle("sextant_hide");
 	}
-	if (start_services) {
-		try {
-			if (window.sextant_events.listeners["bitrate"].length > 0) {
-				window.sextant_events.listeners["bitrate"] = [];
-			}
-		} catch { }
-	} else {
-		register_stream_tracker();
-	}
+	// if (start_services) {
+	// 	try {
+	// 		if (window.sextant_events.listeners["bitrate"].length > 0) {
+	// 			window.sextant_events.listeners["bitrate"] = [];
+	// 		}
+	// 	} catch { }
+	// } else {
+	// 	register_stream_tracker();
+	// }
 }
 
 function sextant_escape_key(e: KeyboardEvent) {
@@ -21,9 +21,9 @@ function sextant_escape_key(e: KeyboardEvent) {
 		document
 			.getElementById("sextant_settings_tab_menu")
 			?.classList.add("sextant_hide");
-		if (window.sextant_events.listeners["bitrate"].length > 0) {
-			window.sextant_events.listeners["bitrate"] = [];
-		}
+		// if (window.sextant_events.listeners["bitrate"].length > 0) {
+		// 	window.sextant_events.listeners["bitrate"] = [];
+		// }
 	}
 }
 
