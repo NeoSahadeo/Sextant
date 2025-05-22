@@ -6,6 +6,9 @@ declare global {
 	}
 	interface Window {
 		sextant_events: SextantEventListener;
+		electron: {
+			async load_file(file_path: string): Promise<string | null>;
+		}
 	}
 }
 

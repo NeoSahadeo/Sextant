@@ -11,7 +11,9 @@ export class PluginManager extends EventListener {
 	register(plugin: SextantPlugin, config?: any) {
 		const injection = plugin.load(config);
 		if (injection) {
-			this.inject += `(${injection})();`;
+			this.inject += `(${injection})();
+			(()=>{window.${"sextant_plugin_" + plugin.name + "_config"} = ${JSON.stringify(config[plugin.name])}})();
+			(()=>{window.${"sextant_plugin_" + plugin.name} = true})();`;
 		}
 		this.plugins.push(plugin);
 	}

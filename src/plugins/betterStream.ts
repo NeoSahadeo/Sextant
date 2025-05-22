@@ -33,8 +33,8 @@ export const better_stream: SextantPlugin = {
 						max: 1080,
 					},
 					frameRate: {
-						ideal: 24,
-						max: 24,
+						ideal: 30,
+						max: 30,
 					},
 				};
 
@@ -56,19 +56,28 @@ export const better_stream: SextantPlugin = {
 			class SextantRTCConnection extends rtc_peer_connection_old {
 				last_bytes_sent = 0;
 				last_timestamp = 0;
+				max_bitrate = 8_000_000; //bits
+				min_bitrate = Math.floor(this.max_bitrate / 1000);
+				scanner: any = null;
 
 				constructor(...args: any) {
 					super(...args);
-					(window as any).local_rtc = this;
+					(window as any).sextant_rtc = this;
 
 					this.addEventListener("negotiationneeded", async () => {
-						let scanner: any = null;
+						const transceiver = this.getTransceivers().find(
+							(t) => t.sender.track && t.sender.track.kind === "video",
+						);
+						if (transceiver && vp8.length) {
+							console.log("[Sextant] Transceiver: ", transceiver);
+							transceiver.setCodecPreferences(vp8);
+						}
 						const senders = this.getSenders().find(
 							(s) => s.track && s.track.kind === "video",
 						);
 						if (senders) {
 							const params = senders.getParameters();
-							params.encodings[0].maxBitrate = 1_000_000;
+							params.encodings[0].maxBitrate = this.max_bitrate;
 							params.encodings[0].networkPriority = "high";
 							params.encodings[0].priority = "high";
 
@@ -79,34 +88,30 @@ export const better_stream: SextantPlugin = {
 							} catch (e) {
 								console.error("[Sextant] Failed to set parameters:", e);
 							}
-							if (scanner) {
-								clearInterval(scanner);
-							}
+
+							console.log("Sextant", senders, this.scanner);
+							if (this.scanner) clearInterval(this.scanner);
 
 							console.log("[Sextant] Setting Up Scanner");
 							let timeout = 0;
-							scanner = setInterval(async () => {
+							this.scanner = setInterval(async () => {
 								const bitrate = await this.calculate_bitrate(senders);
+
 								if (!bitrate) {
 									timeout++;
 								} else {
 									timeout = 0;
 								}
+
 								if (timeout === 10) {
 									console.log("[Sextant] Max timeout reached, closing scanner");
 									timeout = 0;
-									clearInterval(scanner);
+									clearInterval(this.scanner);
 								}
 
+								// console.log("[Sextant] Bitrate", bitrate);
 								window.sextant_events.dispatchEvent("bitrate", bitrate);
 							}, 250);
-						}
-						const transceiver = this.getTransceivers().find(
-							(t) => t.sender.track && t.sender.track.kind === "video",
-						);
-						if (transceiver && vp8.length) {
-							console.log("[Sextant] Transceiver: ", transceiver);
-							transceiver.setCodecPreferences(vp8);
 						}
 					});
 				}
@@ -135,24 +140,28 @@ export const better_stream: SextantPlugin = {
 				}
 			}
 
-			//@ts-ignore
+			// @ts-ignore
 			// Munging
-			// SextantRTCConnection.prototype.createOffer = function() {
-			// 	console.log("[Sextant] RTC Object", this.currentLocalDescription);
-			// 	rtc_create_offer_old.call(
-			// 		this,
-			// 		() => {
-			// 			try {
-			// 				if (this.currentLocalDescription)
-			// 					this.setLocalDescription(this.currentLocalDescription);
-			// 				console.log("[Sextant] Setting Local Description Passed");
-			// 			} catch {
-			// 				console.log("[Sextant] Setting Local Description Failed");
-			// 			}
-			// 		},
-			// 		() => { },
-			// 	);
-			// };
+			SextantRTCConnection.prototype.createOffer = async function(
+				...args
+			): Promise<any> {
+				// @ts-ignore
+				const offer: any = await rtc_create_offer_old.apply(this, args);
+
+				// Munge SDP here
+				console.log("[Sextant] Munging Offer");
+				let sdp = offer.sdp;
+				sdp = sdp.replace(/b=AS:.*\r\n/g, "");
+				sdp = sdp.replace(/b=TIAS:.*\r\n/g, "");
+				sdp = sdp.replace(
+					/(m=video .*\r\n)/,
+					`$1b=TIAS:${this.max_bitrate}\r\nb=AS:${this.min_bitrate}\r\n`,
+				);
+				offer.sdp = sdp;
+				(window as any).sextant_p = sdp;
+
+				return offer;
+			};
 
 			window.RTCPeerConnection = SextantRTCConnection;
 		};
