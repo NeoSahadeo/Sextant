@@ -12,4 +12,6 @@ contextBridge.exposeInMainWorld("electron", {
 	load_css: () => ipcRenderer.invoke("load_css"),
 	load_settings: () => ipcRenderer.invoke("load_settings"),
 	load_file: (file_path) => ipcRenderer.invoke("load_file", file_path),
+
+	open_link: (url) => ipcRenderer.send("open_link", url),
 });
