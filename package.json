@@ -1,7 +1,7 @@
 {
   "name": "Sextant",
   "email": "neosahadeo@protonmail.com",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A modified Discord Electron Wrapper to provide a better Discord experience",
   "main": "build/main.js",
   "type": "module",

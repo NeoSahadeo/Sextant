@@ -16,7 +16,7 @@ export const better_stream: SextantPlugin = {
 
 			const getDisplayMedia_old = navigator.mediaDevices.getDisplayMedia;
 
-			// Override the method
+			// Override the getDisplayMedia method
 			navigator.mediaDevices.getDisplayMedia = async function(constraints) {
 				console.log("[Sextant] Applying BetterStream Plugin");
 
