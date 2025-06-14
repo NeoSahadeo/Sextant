@@ -62,7 +62,22 @@ export const better_stream: SextantPlugin = {
 
 				constructor(...args: any) {
 					super(...args);
-					(window as any).sextant_rtc = this;
+					window.sextant_rtc = this;
+
+					// This is for the better audio plugin
+					if ((window as any).sextant_plugin_BetterAudio) {
+						this.addEventListener("track", (event) => {
+							if (event.track.kind === "audio") {
+								console.log("Sextant track id", event.streams[0].id);
+								event.preventDefault();
+								window.sextant_events.dispatchEvent(
+									"better_audio_ontrack",
+									event,
+								);
+								event.stopImmediatePropagation();
+							}
+						});
+					}
 
 					this.addEventListener("negotiationneeded", async () => {
 						const transceiver = this.getTransceivers().find(
@@ -158,7 +173,6 @@ export const better_stream: SextantPlugin = {
 					`$1b=TIAS:${this.max_bitrate}\r\nb=AS:${this.min_bitrate}\r\n`,
 				);
 				offer.sdp = sdp;
-				(window as any).sextant_p = sdp;
 
 				return offer;
 			};
