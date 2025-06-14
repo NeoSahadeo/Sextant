@@ -1,14 +1,12 @@
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import fs from "node:fs";
 
-import { app, BrowserWindow, globalShortcut, powerSaveBlocker } from "electron";
-import toml from "toml";
+import { app, BrowserWindow, powerSaveBlocker } from "electron";
 
 import tray_icon from "./electrons/tray_icon";
-import { logger, load_file_content, root_path } from "./utils";
-import { PluginManager } from "./pluginManager";
+import { logger } from "./utils";
+import { auto_load, manager } from "./pluginManager";
 import external_config from "./electrons/externalConfig";
 
 /**Plugins**/
@@ -16,9 +14,7 @@ import {
 	dynamic_styles,
 	dynamic_styles_handler,
 } from "./plugins/dynamicStyles";
-import { stop_propagation } from "./plugins/stopPropagation";
 import { better_stream } from "./plugins/betterStream";
-import { reduce_dom_size } from "./plugins/reduceDOMSize";
 import { settings_tab, settings_tab_handler } from "./plugins/settingsTab";
 import { file_loader, file_loader_handler } from "./plugins/fileLoader";
 import { dispatcher } from "./plugins/dispatcher";
@@ -45,13 +41,12 @@ const patches = [
 	on_before_request,
 	//
 ];
-const plugins = [
+let plugins = [
 	dispatcher, // We them events
 	file_loader, // Load asap
 	settings_tab, // Load asap2
 	dynamic_styles,
 	better_stream,
-	reduce_dom_size,
 ];
 const plugin_handlers = [
 	file_loader_handler,
@@ -59,10 +54,13 @@ const plugin_handlers = [
 	settings_tab_handler,
 	//
 ];
-const manager = new PluginManager();
 export let browser_window: BrowserWindow;
 
-function load_plugins() {
+async function load_plugins() {
+	// Auto load plugins here. (Discovery)
+	const auto_modules = await auto_load();
+	plugins.push(...auto_modules);
+
 	const desired_plugins = plugins.filter((e) =>
 		config.Plugins[e.name] === undefined ? true : config.Plugins[e.name],
 	);
@@ -128,19 +126,36 @@ function create_window() {
 		}
 	});
 
-	globalShortcut.register("Control+R", () => {
-		logger("Reloading", "debug");
-		browser_window.webContents.executeJavaScript(
-			`window.sextant_events.dispatchEvent("abort", null)`,
-		);
-		manager.list().forEach((e) => manager.unregister(e));
-		browser_window.webContents.executeJavaScript(manager.get_inject());
+	browser_window.webContents.on("before-input-event", async (event, input) => {
+		// re-write later
+		const key = input.key.toLowerCase();
+		if (input.control && key === "r") {
+			event.preventDefault();
+
+			logger("Reloading", "debug");
+			browser_window.webContents.executeJavaScript(
+				`window.sextant_events.dispatchEvent("abort", null)`,
+			);
+
+			// Unload and clean up
+			manager.list().forEach((e) => manager.unregister(e));
+			browser_window.webContents.executeJavaScript(manager.get_inject());
+
+			// Re-register
+			await load_plugins();
+			browser_window.webContents.executeJavaScript(manager.get_inject());
+		} else if (input.control && key === "q") {
+			event.preventDefault();
+
+			override_close.value = true;
+			browser_window.close();
+		}
 	});
-	globalShortcut.register("Control+Q", () => {
-		override_close.value = true;
-		browser_window.close();
-	});
+
+	// unregister these
 	// globalShortcut.register("Control+Shift+R", () => 0);
+	// globalShortcut.register("Control+R", () => 0);
+	// globalShortcut.register("Control+Q", () => 0);
 }
 
 app.whenReady().then(async () => {
@@ -150,7 +165,7 @@ app.whenReady().then(async () => {
 	patches.forEach((e) => e());
 	config = await external_config();
 
-	load_plugins();
+	await load_plugins();
 	tray_icon();
 
 	if (config) {

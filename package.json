@@ -29,6 +29,7 @@
     ],
     "files": [
       "src/components",
+      "src/plugins/auto",
       "build",
       "static",
       "!**/*.map",
@@ -37,6 +38,7 @@
     "linux": {
       "category": "Communication",
       "target": [
+        "AppImage",
         "pacman"
       ],
       "maintainer": "Neo Sahadeo <neosahadeo@protonmail.com>"
