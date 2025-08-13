@@ -3,7 +3,12 @@
 import path from "node:path";
 import fs from "node:fs";
 import { ipcMain } from "electron";
-import { logger, load_file_content, root_path } from "../utils";
+import {
+	logger,
+	relative_file_load,
+	root_path,
+	direct_file_load,
+} from "../utils";
 
 export const dynamic_styles_handler = (config: any) => {
 	ipcMain.handle("load_css", async () => {

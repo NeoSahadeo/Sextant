@@ -23,6 +23,6 @@ export default async function external_config() {
 	}
 
 	// If no file is found, use fallback
-	contents = await load_file_content(path.join("static", config_name));
+	contents = await relative_file_load(path.join("static", config_name));
 	if (contents) return toml.parse(contents);
 }

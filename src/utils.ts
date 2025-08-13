@@ -81,7 +81,8 @@ const logger = (
 	}
 };
 
-function load_file_content(file_path: string): Promise<null | string> {
+function relative_file_load(file_path: string): Promise<null | string> {
+	// relative
 	return new Promise((resolve, reject) => {
 		fs.readFile(path.join(root_path(), file_path), "utf-8", (err, data) => {
 			if (err) {
@@ -113,7 +114,7 @@ function direct_file_load(file_path: string): Promise<null | string> {
 }
 
 export {
-	load_file_content,
+	relative_file_load,
 	logger,
 	root_path,
 	EventListener,
