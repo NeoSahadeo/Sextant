@@ -1,9 +1,9 @@
 [class^="pill_"] {
-	display: none;
+	/* display: none; */
 }
 
 [class^="blockedIgnoredSettingsNotice__"] {
-	display: none;
+	/* display: none; */
 }
 
 /*Remove start of chat message*/
@@ -12,10 +12,9 @@
 }
 
 /* Better Loading Screen */
-[class*="problems_"],
-[class*="tipTitle_"],
-/* [class*="spinner_"], */
-[class*="tip_"] {
+video+[class*="text_"]>[class*="tipTitle_"],
+video+[class*="text_"]>[class*="tip_"],
+[class*="problems_"] {
 	display: none;
 }
 

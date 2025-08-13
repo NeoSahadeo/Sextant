@@ -1,14 +1,14 @@
 {
   "name": "Sextant",
   "email": "neosahadeo@protonmail.com",
-  "version": "0.0.7",
+  "version": "0.0.81",
   "description": "A modified Discord Electron Wrapper to provide a better Discord experience",
   "main": "build/main.js",
   "type": "module",
   "scripts": {
     "dev": "tsc-watch --onSuccess 'bash dev.sh'",
     "dev:vite": "vite",
-    "start": "APP_DEV=true electron .",
+    "start": "APP_DEV=true electron . --trace-warnings",
     "compile": "rm -r build && tsc && tsc-alias",
     "build": "APP_DEV=false pnpm compile && electron-builder",
     "build:dev": "APP_DEV=true && pnpm compile && cp -r static build && electron-builder",
@@ -29,6 +29,7 @@
     ],
     "files": [
       "src/components",
+      "src/plugins/auto",
       "build",
       "static",
       "!**/*.map",
@@ -37,6 +38,7 @@
     "linux": {
       "category": "Communication",
       "target": [
+        "AppImage",
         "pacman"
       ],
       "maintainer": "Neo Sahadeo <neosahadeo@protonmail.com>"

@@ -4,26 +4,26 @@ DynamicStyles = true
 Dispatcher = true
 FileLoader = true
 BetterStream = true
-SettingsTab = true
 ##########################################
 
 # This can be configured as u wish!
+BetterAudio = false
 BitrateMonitor = false
 ReduceDOMSize = true
-StopPropagation = true
+ExternalLink = true
 ###################################
 
 [Settings]
 width = 600
 heigth = 800
 show_boot = false
-show_dev_tools_on_boot = true
+show_dev_tools_on_boot = false
 hide_menu_bar = true
 allow_menu_bar = true
 allow_dev_tools = true
 transparent = false
 
-dynamic_css_folders = ["static/styles"]
+dynamic_css_folders = ["static/styles", "${HOME}/.config/sextant/styles"]
 request_limit = 50
 blocked_domains = []
 
