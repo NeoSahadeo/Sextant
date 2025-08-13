@@ -3,7 +3,7 @@ import { direct_file_load, logger } from "../utils";
 import fs from "node:fs";
 import path from "path";
 import toml from "toml";
-import { load_file_content } from "../utils";
+import { relative_file_load } from "../utils";
 
 const config_name = "config.toml";
 const file_paths = [
