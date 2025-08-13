@@ -2,6 +2,7 @@
 
 import path from "node:path";
 import fs from "node:fs";
+import os from "node:os";
 import { ipcMain } from "electron";
 import {
 	logger,
@@ -16,24 +17,44 @@ export const dynamic_styles_handler = (config: any) => {
 		let data = "";
 
 		for (const folder of config.Settings.dynamic_css_folders) {
-			const folder_path = folder.split("/");
+			const folder_path: string[] = folder.split("/");
 
 			try {
-				let files: string[] = await fs.promises.readdir(
-					path.join(root_path(), ...folder_path),
-				);
+				let files: string[];
+				if (folder_path[0] == "${HOME}") {
+					files = await fs.promises.readdir(
+						path.join(os.homedir(), ...folder_path.slice(1)),
+					);
+				} else {
+					files = await fs.promises.readdir(
+						path.join(root_path(), ...folder_path),
+					);
+				}
 				files = files.filter((e) => e.endsWith(".css"));
 
-				data += (
-					await Promise.all(
-						files.map(async (file) => {
-							const content = await load_file_content(
-								path.join(...folder_path, file),
-							);
-							return `<style id="sextant_css_${id++}">${content}</style>`;
-						}),
-					)
-				).join("");
+				if (folder_path[0] == "${HOME}") {
+					data += (
+						await Promise.all(
+							files.map(async (file) => {
+								const content = await direct_file_load(
+									path.join(os.homedir(), ...folder_path.slice(1), file),
+								);
+								return `<style id="sextant_css_${id++}">${content}</style>`;
+							}),
+						)
+					).join("");
+				} else {
+					data += (
+						await Promise.all(
+							files.map(async (file) => {
+								const content = await relative_file_load(
+									path.join(...folder_path, file),
+								);
+								return `<style id="sextant_css_${id++}">${content}</style>`;
+							}),
+						)
+					).join("");
+				}
 			} catch (error) {
 				logger(error, "error");
 			}
@@ -48,11 +69,13 @@ export const dynamic_styles: SextantPlugin = {
 	load() {
 		return async () => {
 			const data = await (window as any).electron.load_css();
-
+			document.body.insertAdjacentHTML("afterbegin", data);
+		};
+	},
+	unload() {
+		return () => {
 			const elements = document.querySelectorAll('style[id^="sextant_css_"]');
 			elements.forEach((e) => e.remove());
-
-			document.body.insertAdjacentHTML("afterbegin", data);
 		};
 	},
 };

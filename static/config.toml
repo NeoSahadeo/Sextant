@@ -23,7 +23,7 @@ allow_menu_bar = true
 allow_dev_tools = true
 transparent = false
 
-dynamic_css_folders = ["static/styles"]
+dynamic_css_folders = ["static/styles", "${HOME}/.config/sextant/styles"]
 request_limit = 50
 blocked_domains = []
 
