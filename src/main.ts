@@ -15,9 +15,9 @@ import {
 	dynamic_styles_handler,
 } from "./plugins/dynamicStyles";
 import { better_stream } from "./plugins/betterStream";
-import { settings_tab, settings_tab_handler } from "./plugins/settingsTab";
 import { file_loader, file_loader_handler } from "./plugins/fileLoader";
 import { dispatcher } from "./plugins/dispatcher";
+import { react_harder } from "./plugins/reactHarder";
 /***********/
 
 /**Patches**/
@@ -45,6 +45,7 @@ let plugins = [
 	dispatcher, // We them events
 	file_loader, // Load asap
 	settings_tab, // Load asap2
+	react_harder,
 	dynamic_styles,
 	better_stream,
 ];
