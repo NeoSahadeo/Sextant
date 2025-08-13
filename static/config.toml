@@ -4,7 +4,6 @@ DynamicStyles = true
 Dispatcher = true
 FileLoader = true
 BetterStream = true
-SettingsTab = true
 ##########################################
 
 # This can be configured as u wish!

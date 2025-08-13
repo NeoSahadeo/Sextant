@@ -44,7 +44,6 @@ const patches = [
 let plugins = [
 	dispatcher, // We them events
 	file_loader, // Load asap
-	settings_tab, // Load asap2
 	react_harder,
 	dynamic_styles,
 	better_stream,
@@ -52,7 +51,6 @@ let plugins = [
 const plugin_handlers = [
 	file_loader_handler,
 	dynamic_styles_handler,
-	settings_tab_handler,
 	//
 ];
 export let browser_window: BrowserWindow;
