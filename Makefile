@@ -1,7 +1,7 @@
-run:
+dev:
 	pnpx @neutralinojs/neu run
 
-run-d:
+dev-d:
 	pnpx @neutralinojs/neu run -- --window-enable-inspector
 
 build:
